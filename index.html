@@ -1,1630 +1,351 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BioTech Lab Assistant</title>
-    <meta
-      name="description"
-      content="BioTech Lab Assistant: PCR, Western blot, dilution, and sequence analysis tools for molecular biology workflows."
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <style>
-      :root {
-        --bg: #f4f7fb;
-        --panel: #ffffff;
-        --panel-strong: #eef4ff;
-        --accent: #175ddc;
-        --accent-soft: rgba(23, 93, 220, 0.12);
-        --text: #1e293b;
-        --muted: #64748b;
-        --success: #1f9d61;
-        --warning: #d97706;
-        --danger: #d14343;
-        --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioTech Lab Assistant</title>
+  <meta name="description" content="BioTech Lab Assistant: educational PCR, Western blot, dilution, molarity, and DNA/RNA sequence analysis tools." />
 
-      html[dir="rtl"] {
-        direction: rtl;
-      }
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-      body {
-        background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 30%, #f8fafc 100%);
-        color: var(--text);
-        font-family: "Inter", "Segoe UI", Tahoma, Arial, sans-serif;
-      }
-
-      body[dir="rtl"],
-      body[dir="rtl"] .form-control,
-      body[dir="rtl"] .form-select,
-      body[dir="rtl"] .dropdown-menu,
-      body[dir="rtl"] .btn,
-      body[dir="rtl"] .table,
-      body[dir="rtl"] .navbar,
-      body[dir="rtl"] .navbar-brand,
-      body[dir="rtl"] .card,
-      body[dir="rtl"] .alert {
-        font-family: "Vazirmatn", "Tahoma", "Segoe UI", sans-serif;
-      }
-
-      .navbar {
-        position: sticky;
-        top: 0;
-        z-index: 1030;
-        background: linear-gradient(90deg, #0d1b2a 0%, #123d72 60%, #1d4d8f 100%);
-        box-shadow: 0 6px 24px rgba(12, 20, 35, 0.18);
-      }
-
-      .brand-mark {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 0.85rem;
-        background: linear-gradient(135deg, rgba(110, 231, 183, 0.18), rgba(96, 165, 250, 0.2));
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 8px 18px rgba(11, 18, 32, 0.15);
-        overflow: hidden;
-      }
-
-      .brand-mark svg {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-
-      .muted {
-        color: var(--muted);
-      }
-
-      .card {
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 1rem;
-        box-shadow: var(--shadow);
-      }
-
-      .section-card {
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(12px);
-      }
-
-      .module-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 0.8rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-size: 1.1rem;
-      }
-
-      .result-box {
-        background: linear-gradient(135deg, #edf5ff 0%, #f4f8ff 100%);
-        border: 1px solid rgba(23, 93, 220, 0.12);
-        border-radius: 0.8rem;
-        padding: 0.9rem 1rem;
-      }
-
-      .table thead th {
-        background: #f8fafc;
-        font-size: 0.86rem;
-        letter-spacing: 0.02em;
-      }
-
-      .badge-soft {
-        background: rgba(15, 118, 110, 0.12);
-        color: #0f766e;
-      }
-
-      .alert-banner {
-        display: none;
-        margin-bottom: 1rem;
-      }
-
-      .alert-banner.show {
-        display: block;
-      }
-
-      .custom-size-group {
-        display: none;
-      }
-
-      .custom-size-group.show {
-        display: block;
-      }
-
-      .sequence-output {
-        min-height: 120px;
-        white-space: pre-wrap;
-      }
-
-      .result-output-wrap {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-
-      .result-output-wrap .sequence-output {
-        min-height: auto;
-      }
-
-      .copy-btn {
-        align-self: flex-start;
-        width: 2.2rem;
-        height: 2.2rem;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.6rem;
-        transition: all 0.2s ease;
-      }
-
-      .copy-btn.copied {
-        background: rgba(25, 135, 84, 0.12);
-        border-color: rgba(25, 135, 84, 0.35);
-        color: var(--success);
-      }
-
-      .readout {
-        font-weight: 700;
-        color: var(--accent);
-      }
-
-      .footer-note {
-        color: var(--muted);
-        font-size: 0.8rem;
-      }
-
-      @media (max-width: 768px) {
-        .navbar-brand {
-          font-size: 1.05rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-          <span class="brand-mark" aria-label="BioTech Lab Assistant logo">
-            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-              <defs>
-                <linearGradient id="labGlow" x1="0" x2="1" y1="0" y2="1">
-                  <stop offset="0%" stop-color="#9ef0d1" />
-                  <stop offset="48%" stop-color="#68d5ff" />
-                  <stop offset="100%" stop-color="#c7d2fe" />
-                </linearGradient>
-              </defs>
-              <rect x="6" y="10" width="52" height="44" rx="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.28)"/>
-              <path d="M25 18 V31 C25 34 23 35 19 38 L17 40 C14.5 42 14 45 14 48 C14 52 17 55 21 55 H43 C47 55 50 52 50 48 C50 45 49.5 42 47 40 L45 38 C41 35 39 34 39 31 V18" fill="none" stroke="url(#labGlow)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M25 18 H39" stroke="#dff9ff" stroke-width="3" stroke-linecap="round"/>
-              <path d="M26 27 H38" stroke="#dff9ff" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
-              <path d="M23 41 C27 38, 30 38, 32 41 C34 44, 38 44, 41 41" fill="none" stroke="#e2f5ff" stroke-width="2.4" stroke-linecap="round"/>
-              <circle cx="32" cy="32" r="4.2" fill="none" stroke="#eafcff" stroke-width="2.2"/>
-              <path d="M32 24 V40 M24 32 H40" stroke="#eafcff" stroke-width="1.7" stroke-linecap="round" opacity="0.8"/>
-            </svg>
-          </span>
-          <span data-i18n="brandTitle">BioTech Lab Assistant</span>
-        </a>
-
-        <div class="ms-auto">
-          <div class="dropdown">
-            <button
-              class="btn btn-outline-light dropdown-toggle"
-              type="button"
-              id="languageDropdown"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i class="bi bi-globe2 me-2"></i>
-              <span id="selectedLanguageLabel">EN</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-              <li>
-                <button class="dropdown-item active" type="button" data-lang="en">
-                  English (EN) - LTR
-                </button>
-              </li>
-              <li>
-                <button class="dropdown-item" type="button" data-lang="fa">
-                  فارسی (FA) - RTL
-                </button>
-              </li>
-              <li>
-                <button class="dropdown-item" type="button" data-lang="de">
-                  Deutsch (DE) - LTR
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <main class="container py-4">
-      <div id="appAlert" class="alert alert-banner" role="alert"></div>
-
-      <div class="modal fade" id="exportFormatModal" tabindex="-1" aria-labelledby="exportFormatModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exportFormatModalLabel" data-i18n="exportModalTitle">Choose export format</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <p class="muted mb-3" data-i18n="exportModalDesc">Select the format for your laboratory worksheet.</p>
-              <div class="d-grid gap-2">
-                <button type="button" class="btn btn-outline-primary export-format-btn" data-export-format="docx" data-i18n="exportFormatWord">
-                  <i class="bi bi-file-earmark-word me-2"></i><span>Word document (.docx)</span>
-                </button>
-                <button type="button" class="btn btn-outline-success export-format-btn" data-export-format="xls" data-i18n="exportFormatExcel">
-                  <i class="bi bi-file-earmark-spreadsheet me-2"></i><span>Excel workbook (.xls)</span>
-                </button>
-                <button type="button" class="btn btn-outline-secondary export-format-btn" data-export-format="csv" data-i18n="exportFormatCsv">
-                  <i class="bi bi-filetype-csv me-2"></i><span>Comma-separated values (.csv)</span>
-                </button>
-                <button type="button" class="btn btn-outline-dark export-format-btn" data-export-format="txt" data-i18n="exportFormatTxt">
-                  <i class="bi bi-filetype-txt me-2"></i><span>Plain text (.txt)</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-end mb-3">
-        <button id="exportLabSheetBtn" class="btn btn-success" type="button">
-          <i class="bi bi-download me-2"></i><span data-i18n="exportButton">Export Lab Sheet</span>
+  <style>
+    :root {
+      --bg:#f4f7fb; --panel:#fff; --accent:#175ddc; --accent-soft:rgba(23,93,220,.12);
+      --text:#1e293b; --muted:#64748b; --success:#1f9d61; --shadow:0 12px 32px rgba(15,23,42,.08);
+    }
+    html[dir="rtl"] { direction:rtl; }
+    body { background:linear-gradient(180deg,#eef4ff 0%,var(--bg) 30%,#f8fafc 100%); color:var(--text); font-family:"Inter","Segoe UI",Tahoma,Arial,sans-serif; }
+    body[dir="rtl"], body[dir="rtl"] .form-control, body[dir="rtl"] .form-select, body[dir="rtl"] .dropdown-menu,
+    body[dir="rtl"] .btn, body[dir="rtl"] .table, body[dir="rtl"] .navbar, body[dir="rtl"] .navbar-brand,
+    body[dir="rtl"] .card, body[dir="rtl"] .alert { font-family:"Vazirmatn",Tahoma,"Segoe UI",sans-serif; }
+    .navbar { position:sticky; top:0; z-index:1030; background:linear-gradient(90deg,#0d1b2a 0%,#123d72 60%,#1d4d8f 100%); box-shadow:0 6px 24px rgba(12,20,35,.18); }
+    .brand-mark { display:inline-flex; align-items:center; justify-content:center; width:2.5rem; height:2.5rem; border-radius:.85rem; background:linear-gradient(135deg,rgba(110,231,183,.18),rgba(96,165,250,.2)); border:1px solid rgba(255,255,255,.22); }
+    .brand-mark i { font-size:1.35rem; }
+    .muted { color:var(--muted); }
+    .card { border:1px solid rgba(148,163,184,.18); border-radius:1rem; box-shadow:var(--shadow); }
+    .section-card { background:rgba(255,255,255,.94); backdrop-filter:blur(12px); }
+    .module-icon { width:2.5rem; height:2.5rem; border-radius:.8rem; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent); font-size:1.1rem; }
+    .result-box { background:linear-gradient(135deg,#edf5ff 0%,#f4f8ff 100%); border:1px solid rgba(23,93,220,.12); border-radius:.8rem; padding:.9rem 1rem; }
+    .readout { font-weight:700; color:var(--accent); }
+    .table thead th { background:#f8fafc; font-size:.86rem; letter-spacing:.02em; }
+    .badge-soft { background:rgba(15,118,110,.12); color:#0f766e; }
+    .alert-banner { display:none; margin-bottom:1rem; }
+    .alert-banner.show { display:block; }
+    .custom-size-group { display:none; }
+    .custom-size-group.show { display:block; }
+    .sequence-output { min-height:80px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .result-output-wrap { display:flex; align-items:flex-start; gap:.5rem; }
+    .result-output-wrap .sequence-output { min-height:auto; }
+    .copy-btn { align-self:flex-start; width:2.2rem; height:2.2rem; padding:0; display:inline-flex; align-items:center; justify-content:center; border-radius:.6rem; }
+    .copy-btn.copied { background:rgba(25,135,84,.12); border-color:rgba(25,135,84,.35); color:var(--success); }
+    .footer-note { color:var(--muted); font-size:.8rem; }
+    .tool-note { font-size:.82rem; background:#fff9e8; border:1px solid #f5d98b; border-radius:.7rem; padding:.65rem .8rem; color:#6b5300; }
+    @media (max-width:768px) { .navbar-brand { font-size:1.05rem; } }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <span class="brand-mark" aria-label="BioTech Lab Assistant logo"><i class="bi bi-beaker"></i></span>
+      <span data-i18n="brandTitle">BioTech Lab Assistant</span>
+    </a>
+    <div class="ms-auto">
+      <div class="dropdown">
+        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="bi bi-globe2 me-2"></i><span id="selectedLanguageLabel">EN</span>
         </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><button class="dropdown-item active" type="button" data-lang="en">English (EN) - LTR</button></li>
+          <li><button class="dropdown-item" type="button" data-lang="fa">فارسی (FA) - RTL</button></li>
+          <li><button class="dropdown-item" type="button" data-lang="de">Deutsch (DE) - LTR</button></li>
+        </ul>
       </div>
+    </div>
+  </div>
+</nav>
 
-      <div class="row g-4">
-        <div class="col-xl-6">
-          <section class="card section-card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="module-icon"><i class="bi bi-thermometer-half"></i></span>
-                  <div>
-                    <h4 class="mb-0" data-i18n="pcrTitle">PCR Master Mix Calculator</h4>
-                  </div>
-                </div>
-                <span class="badge badge-soft rounded-pill" data-i18n="moduleMolecular">Molecular</span>
-              </div>
+<main class="container py-4">
+  <div id="appAlert" class="alert alert-banner" role="alert"></div>
 
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label" data-i18n="pcrWellsLabel">Number of wells (n)</label>
-                  <input id="pcrWells" type="number" class="form-control" min="1" step="1" value="8" />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label" data-i18n="pcrVolumeLabel">Reaction volume (µL)</label>
-                  <input id="pcrVolume" type="number" class="form-control" min="1" step="0.1" value="25" />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label" data-i18n="pcrExcessLabel">Excess margin (%)</label>
-                  <input id="pcrExcess" type="number" class="form-control" min="0" step="0.1" value="10" />
-                </div>
-              </div>
-
-              <div class="table-responsive mt-4">
-                <table class="table table-sm align-middle table-hover">
-                  <thead>
-                    <tr>
-                      <th data-i18n="componentHeader">Component</th>
-                      <th class="text-center" data-i18n="perWellHeader">Per well (µL)</th>
-                      <th class="text-center" data-i18n="totalHeader">Total (µL)</th>
-                    </tr>
-                  </thead>
-                  <tbody id="pcrTableBody"></tbody>
-                </table>
-              </div>
-
-              <div class="row g-3 mt-1">
-                <div class="col-md-6">
-                  <div class="result-box">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span data-i18n="perWellVolumeLabel">Per-well volume (1x)</span>
-                      <strong id="pcrPerWellValue" class="readout">25.00 µL</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="result-box">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span data-i18n="bulkMixLabel">Total bulk master mix</span>
-                      <strong id="pcrBulkValue" class="readout">0.00 µL</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+  <div class="modal fade" id="exportFormatModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" data-i18n="exportModalTitle">Choose export format</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
-        <div class="col-xl-6">
-          <section class="card section-card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="module-icon"><i class="bi bi-sliders"></i></span>
-                  <div>
-                    <h4 class="mb-0" data-i18n="westernTitle">Western Blot ECL Substrate Calculator</h4>
-                  </div>
-                </div>
-                <span class="badge badge-soft rounded-pill" data-i18n="moduleImmuno">Immunoassay</span>
-              </div>
-
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label" data-i18n="westernMembranesLabel">Number of membranes</label>
-                  <input id="westernMembranes" type="number" class="form-control" min="1" step="1" value="2" />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label" data-i18n="westernSizeLabel">Membrane size</label>
-                  <select id="westernSizeSelect" class="form-select">
-                    <option value="mini" data-i18n="westernMini">Mini-gel (7×8 cm)</option>
-                    <option value="midi" data-i18n="westernMidi">Midi-gel (8×10 cm)</option>
-                    <option value="custom" data-i18n="westernCustom">Custom</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label" data-i18n="westernCoverageLabel">Coverage rate (mL/cm²)</label>
-                  <input id="westernCoverage" type="number" class="form-control" min="0" step="0.001" value="0.1" />
-                </div>
-              </div>
-
-              <div class="custom-size-group mt-3" id="westernCustomSizeGroup">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label" data-i18n="westernWidthLabel">Width (cm)</label>
-                    <input id="westernWidth" type="number" class="form-control" min="0.1" step="0.1" value="8" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" data-i18n="westernHeightLabel">Height (cm)</label>
-                    <input id="westernHeight" type="number" class="form-control" min="0.1" step="0.1" value="10" />
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-3">
-                <label class="form-label" data-i18n="westernPresetLabel">Commercial kit preset</label>
-                <select id="westernPreset" class="form-select">
-                  <option value="1:1" data-i18n="westernPreset11">Standard 1:1 ratio</option>
-                  <option value="40:1" data-i18n="westernPreset401">40:1 ratio</option>
-                </select>
-              </div>
-
-              <div class="row g-3 mt-1">
-                <div class="col-md-4">
-                  <div class="result-box">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span data-i18n="totalWorkingVolumeLabel">Total working vol.</span>
-                      <strong id="westernTotalVolume" class="readout">0.00 mL</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="result-box">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span data-i18n="solutionALabel">Solution A</span>
-                      <strong id="westernSolutionA" class="readout">0.00 mL</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="result-box">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span data-i18n="solutionBLabel">Solution B</span>
-                      <strong id="westernSolutionB" class="readout">0.00 mL</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <div class="col-xl-6">
-          <section class="card section-card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="module-icon"><i class="bi bi-droplet-half"></i></span>
-                  <div>
-                    <h4 class="mb-0" data-i18n="dilutionTitle">Universal Dilution &amp; Molarity Converter</h4>
-                  </div>
-                </div>
-                <span class="badge badge-soft rounded-pill" data-i18n="moduleQuantitation">Quantitation</span>
-              </div>
-
-              <div class="mb-3">
-                <h6 class="mb-2" data-i18n="dilutionSectionTitle">Dilution Calculator</h6>
-                <div class="row g-3">
-                  <div class="col-md-3">
-                    <label class="form-label" data-i18n="stockCLabel">C1</label>
-                    <input id="dilutionC1" type="number" class="form-control" min="0" step="0.000001" value="1" />
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label" data-i18n="unitLabel">Unit</label>
-                    <select id="dilutionC1Unit" class="form-select">
-                      <option value="1">M</option>
-                      <option value="0.001">mM</option>
-                      <option value="0.000001">µM</option>
-                      <option value="0.000000001">nM</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label" data-i18n="finalCLabel">C2</label>
-                    <input id="dilutionC2" type="number" class="form-control" min="0" step="0.000001" value="0.05" />
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label" data-i18n="unitLabel">Unit</label>
-                    <select id="dilutionC2Unit" class="form-select">
-                      <option value="1">M</option>
-                      <option value="0.001">mM</option>
-                      <option value="0.000001">µM</option>
-                      <option value="0.000000001">nM</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row g-3 mt-1">
-                  <div class="col-md-6">
-                    <label class="form-label" data-i18n="targetVolumeLabel">Final volume (V2)</label>
-                    <input id="dilutionV2" type="number" class="form-control" min="0" step="0.1" value="1000" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" data-i18n="volumeUnitLabel">Volume unit</label>
-                    <select id="dilutionV2Unit" class="form-select">
-                      <option value="0.000001">µL</option>
-                      <option value="0.001">mL</option>
-                      <option value="1">L</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="result-box mt-3">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span data-i18n="stockAliquotLabel">Stock aliquot (V1)</span>
-                    <strong id="dilutionV1Output" class="readout">0.00 µL</strong>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span data-i18n="bufferBalanceLabel">Balance buffer</span>
-                    <strong id="dilutionBufferOutput" class="readout">0.00 µL</strong>
-                  </div>
-                </div>
-              </div>
-
-              <hr />
-
-              <div>
-                <h6 class="mb-2" data-i18n="massMolarityTitle">Mass / Molarity Converter</h6>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label" data-i18n="targetConcLabel">Target concentration</label>
-                    <input id="massConc" type="number" class="form-control" min="0" step="0.000001" value="0.1" />
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label" data-i18n="massConcUnitLabel">Concentration unit</label>
-                    <select id="massConcUnit" class="form-select">
-                      <option value="1">M</option>
-                      <option value="0.001">mM</option>
-                      <option value="0.000001">µM</option>
-                      <option value="0.000000001">nM</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label" data-i18n="molecularWeightLabel">Molecular weight</label>
-                    <input id="massMw" type="number" class="form-control" min="0" step="0.1" value="180.16" />
-                  </div>
-                </div>
-                <div class="row g-3 mt-1">
-                  <div class="col-md-6">
-                    <label class="form-label" data-i18n="targetVolumeLabel">Target volume</label>
-                    <input id="massVolume" type="number" class="form-control" min="0" step="0.1" value="10" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" data-i18n="massVolumeUnitLabel">Volume unit</label>
-                    <select id="massVolumeUnit" class="form-select">
-                      <option value="0.000001">µL</option>
-                      <option value="0.001">mL</option>
-                      <option value="1">L</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="result-box mt-3">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span data-i18n="massRequiredLabel">Required mass</span>
-                    <strong id="massResultG" class="readout">0.0000 g</strong>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span data-i18n="massRequiredMgLabel">Required mass (mg)</span>
-                    <strong id="massResultMg" class="readout">0.00 mg</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <div class="col-xl-6">
-          <section class="card section-card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="module-icon"><i class="bi bi-dna"></i></span>
-                  <div>
-                    <h4 class="mb-0" data-i18n="sequenceTitle">Sequence Analysis &amp; GC Content Tool</h4>
-                  </div>
-                </div>
-                <span class="badge badge-soft rounded-pill" data-i18n="moduleBioinfo">Bioinformatics</span>
-              </div>
-
-              <label class="form-label" data-i18n="sequenceInputLabel">Sequence input</label>
-              <textarea id="sequenceInput" class="form-control" rows="8" spellcheck="false" data-i18n-placeholder="sequencePlaceholder" placeholder="Paste raw sequence or FASTA here…"></textarea>
-
-              <div class="d-flex justify-content-between align-items-center mt-3 gap-2 flex-wrap">
-                <button id="analyzeSequenceBtn" class="btn btn-primary" type="button">
-                  <i class="bi bi-play-circle me-1"></i><span data-i18n="analyzeButton">Analyze Sequence</span>
-                </button>
-                <small class="muted" data-i18n="sequenceHint">DNA/RNA · FASTA accepted</small>
-              </div>
-
-              <div class="row g-2 mt-3">
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="lengthLabel">Length</div>
-                    <div id="seqLength" class="readout">0 nt</div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="gcLabel">GC %</div>
-                    <div id="seqGc" class="readout">0.00%</div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="atLabel">AT %</div>
-                    <div id="seqAt" class="readout">0.00%</div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="molecularWeightLabel">Estimated MW</div>
-                    <div id="seqMw" class="readout">0.00 kDa</div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="tmLabel">Tm</div>
-                    <div id="seqTm" class="readout">0.00 °C</div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="nucleotideCountsLabel">Base counts</div>
-                    <div id="seqCounts" class="readout small sequence-output">A: 0 · T/U: 0 · C: 0 · G: 0</div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <div class="result-box">
-                    <div class="small muted" data-i18n="reverseComplementLabel">Reverse complement</div>
-                    <div class="result-output-wrap">
-                      <div id="seqReverse" class="readout small sequence-output flex-grow-1">-</div>
-                      <button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy-target="seqReverse" aria-label="Copy reverse complement" title="Copy">
-                        <i class="bi bi-clipboard"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-3">
-                <h6 class="mb-2" data-i18n="translationLabel">Protein translation (frame 1)</h6>
-                <div class="result-output-wrap result-box">
-                  <div id="seqTranslation" class="sequence-output fw-semibold flex-grow-1">-</div>
-                  <button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy-target="seqTranslation" aria-label="Copy protein translation" title="Copy">
-                    <i class="bi bi-clipboard"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+        <div class="modal-body">
+          <p class="muted mb-3" data-i18n="exportModalDesc">Select the format for your laboratory worksheet.</p>
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-outline-primary export-format-btn" data-export-format="docx"><i class="bi bi-file-earmark-word me-2"></i><span data-i18n="exportFormatWord">Word document (.docx)</span></button>
+            <button type="button" class="btn btn-outline-success export-format-btn" data-export-format="xls"><i class="bi bi-file-earmark-spreadsheet me-2"></i><span data-i18n="exportFormatExcel">Excel-compatible file (.xls)</span></button>
+            <button type="button" class="btn btn-outline-secondary export-format-btn" data-export-format="csv"><i class="bi bi-filetype-csv me-2"></i><span data-i18n="exportFormatCsv">Comma-separated values (.csv)</span></button>
+            <button type="button" class="btn btn-outline-dark export-format-btn" data-export-format="txt"><i class="bi bi-filetype-txt me-2"></i><span data-i18n="exportFormatTxt">Plain text (.txt)</span></button>
+          </div>
         </div>
       </div>
-
-      <div class="mt-4 text-center footer-note">
-        <span data-i18n="footerText">Built for rapid molecular biology planning, lab calculations, and sequence review.</span>
-      </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-    <script>
-      const translations = {
-        en: {
-          brandTitle: "BioTech Lab Assistant",
-          moduleMolecular: "Molecular",
-          moduleImmuno: "Immunoassay",
-          moduleQuantitation: "Quantitation",
-          moduleBioinfo: "Bioinformatics",
-          pcrTitle: "PCR Master Mix Calculator",
-          westernTitle: "Western Blot ECL Substrate Calculator",
-          dilutionTitle: "Universal Dilution & Molarity Converter",
-          sequenceTitle: "Sequence Analysis & GC Content Tool",
-          pcrWellsLabel: "Number of wells (n)",
-          pcrVolumeLabel: "Reaction volume (µL)",
-          pcrExcessLabel: "Excess margin (%)",
-          componentHeader: "Component",
-          perWellHeader: "Per well (µL)",
-          totalHeader: "Total (µL)",
-          perWellVolumeLabel: "Per-well volume (1x)",
-          bulkMixLabel: "Total bulk master mix",
-          westernMembranesLabel: "Number of membranes",
-          westernSizeLabel: "Membrane size",
-          westernMini: "Mini-gel (7×8 cm)",
-          westernMidi: "Midi-gel (8×10 cm)",
-          westernCustom: "Custom",
-          westernCoverageLabel: "Coverage rate (mL/cm²)",
-          westernWidthLabel: "Width (cm)",
-          westernHeightLabel: "Height (cm)",
-          westernPresetLabel: "Commercial kit preset",
-          westernPreset11: "Standard 1:1 ratio",
-          westernPreset401: "40:1 ratio",
-          totalWorkingVolumeLabel: "Total working vol.",
-          solutionALabel: "Solution A",
-          solutionBLabel: "Solution B",
-          dilutionSectionTitle: "Dilution Calculator",
-          stockCLabel: "C1",
-          finalCLabel: "C2",
-          unitLabel: "Unit",
-          targetVolumeLabel: "Final volume (V2)",
-          volumeUnitLabel: "Volume unit",
-          stockAliquotLabel: "Stock aliquot (V1)",
-          bufferBalanceLabel: "Balance buffer",
-          massMolarityTitle: "Mass / Molarity Converter",
-          targetConcLabel: "Target concentration",
-          massConcUnitLabel: "Concentration unit",
-          molecularWeightLabel: "Molecular weight",
-          massVolumeUnitLabel: "Volume unit",
-          massRequiredLabel: "Required mass",
-          massRequiredMgLabel: "Required mass (mg)",
-          sequenceInputLabel: "Sequence input",
-          sequencePlaceholder: "Paste raw sequence or FASTA here…",
-          analyzeButton: "Analyze Sequence",
-          sequenceHint: "DNA/RNA · FASTA accepted",
-          lengthLabel: "Length",
-          gcLabel: "GC %",
-          atLabel: "AT %",
-          tmLabel: "Tm",
-          massRequiredMwLabel: "Estimated MW",
-          nucleotideCountsLabel: "Base counts",
-          reverseComplementLabel: "Reverse complement",
-          translationLabel: "Protein translation (frame 1)",
-          copyLabel: "Copy",
-          copyCopied: "Copied",
-          exportButton: "Export Lab Sheet",
-          exportModalTitle: "Choose export format",
-          exportModalDesc: "Select the format for your laboratory worksheet.",
-          exportFormatWord: "Word document (.docx)",
-          exportFormatExcel: "Excel workbook (.xls)",
-          exportFormatCsv: "Comma-separated values (.csv)",
-          exportFormatTxt: "Plain text (.txt)",
-          footerText: "Built for rapid molecular biology planning, lab calculations, and sequence review.",
-          alertInvalidInput: "Please enter valid non-negative values.",
-          alertC1Greater: "C1 must be greater than C2 to compute a realistic dilution.",
-          alertInvalidBase: "The sequence includes unsupported IUPAC nucleotide bases. Please review the input."
-        },
-        fa: {
-          brandTitle: "دستیار آزمایشگاه بیوتکنولوژی",
-          moduleMolecular: "مولکولی",
-          moduleImmuno: "ایمونواسی",
-          moduleQuantitation: "کمّی",
-          moduleBioinfo: "بیوانفورماتیک",
-          pcrTitle: "محاسبه میکس PCR",
-          westernTitle: "محاسبه سوبستریت ECL وسترن بلات",
-          dilutionTitle: "مبدل رقت و غلظت مولاری",
-          sequenceTitle: "تحلیل توالی و محاسبه GC",
-          pcrWellsLabel: "تعداد چاهک‌ها (n)",
-          pcrVolumeLabel: "حجم واکنش (µL)",
-          pcrExcessLabel: "حاشیه اضافی (%)",
-          componentHeader: "جزء",
-          perWellHeader: "به ازای هر چاهک (µL)",
-          totalHeader: "کل (µL)",
-          perWellVolumeLabel: "حجم هر چاهک (1x)",
-          bulkMixLabel: "کل میکس bulk",
-          westernMembranesLabel: "تعداد غشاها",
-          westernSizeLabel: "اندازه غشا",
-          westernMini: "Mini-gel (7×8 cm)",
-          westernMidi: "Midi-gel (8×10 cm)",
-          westernCustom: "سفارشی",
-          westernCoverageLabel: "نرخ پوشش (mL/cm²)",
-          westernWidthLabel: "عرض (cm)",
-          westernHeightLabel: "ارتفاع (cm)",
-          westernPresetLabel: "پیش‌تنظیم کیت تجاری",
-          westernPreset11: "نسبت استاندارد 1:1",
-          westernPreset401: "نسبت 40:1",
-          totalWorkingVolumeLabel: "حجم کاری کل",
-          solutionALabel: "محلول A",
-          solutionBLabel: "محلول B",
-          dilutionSectionTitle: "محاسبه رقت",
-          stockCLabel: "C1",
-          finalCLabel: "C2",
-          unitLabel: "واحد",
-          targetVolumeLabel: "حجم نهایی (V2)",
-          volumeUnitLabel: "واحد حجم",
-          stockAliquotLabel: "آلی‌کوت استوک (V1)",
-          bufferBalanceLabel: "بافر تعادلی",
-          massMolarityTitle: "مبدل جرم / مولاریته",
-          targetConcLabel: "غلظت هدف",
-          massConcUnitLabel: "واحد غلظت",
-          molecularWeightLabel: "وزن مولکولی",
-          massVolumeUnitLabel: "واحد حجم",
-          massRequiredLabel: "جرم مورد نیاز",
-          massRequiredMgLabel: "جرم مورد نیاز (mg)",
-          sequenceInputLabel: "ورودی توالی",
-          sequencePlaceholder: "توالی خام یا FASTA را اینجا وارد کنید…",
-          analyzeButton: "تحلیل توالی",
-          sequenceHint: "DNA/RNA · FASTA پشتیبانی می‌شود",
-          lengthLabel: "طول",
-          gcLabel: "درصد GC",
-          atLabel: "درصد AT",
-          tmLabel: "Tm",
-          massRequiredMwLabel: "MW تقریبی",
-          nucleotideCountsLabel: "تعداد بازها",
-          reverseComplementLabel: "مکمل معکوس",
-          translationLabel: "ترجمه پروتئین (فریم 1)",
-          copyLabel: "کپی",
-          copyCopied: "کپی شد",
-          exportButton: "خروجی Lab Sheet",
-          exportModalTitle: "انتخاب فرمت خروجی",
-          exportModalDesc: "فرمت مورد نظر برای برگه محاسبات آزمایشگاه را انتخاب کنید.",
-          exportFormatWord: "سند ورد (.docx)",
-          exportFormatExcel: "اکسل (.xls)",
-          exportFormatCsv: "فایل (.csv)",
-          exportFormatTxt: "متن ساده (.txt)",
-          footerText: "برای برنامه‌ریزی سریع بیولوژی مولکولی، محاسبات آزمایشگاهی و بررسی توالی طراحی شده است.",
-          alertInvalidInput: "لطفاً مقادیر معتبر و غیرمنفی وارد کنید.",
-          alertC1Greater: "برای محاسبه رقت واقعی، C1 باید بزرگ‌تر از C2 باشد.",
-          alertInvalidBase: "توالی شامل پایه‌های IUPAC نامعتبر است. لطفاً ورودی را بررسی کنید."
-        },
-        de: {
-          brandTitle: "BioTech Lab Assistant",
-          moduleMolecular: "Molekular",
-          moduleImmuno: "Immunoassay",
-          moduleQuantitation: "Quantifizierung",
-          moduleBioinfo: "Bioinformatik",
-          pcrTitle: "PCR-Mastermix-Rechner",
-          westernTitle: "Western-Blot-ECL-Substrat-Rechner",
-          dilutionTitle: "Universeller Verdünnungs- und Molaritätskonverter",
-          sequenceTitle: "Sequenzanalyse & GC-Gehalts-Tool",
-          pcrWellsLabel: "Anzahl der Reaktionen (n)",
-          pcrVolumeLabel: "Reaktionsvolumen (µL)",
-          pcrExcessLabel: "Pipettier-Überschuss (%)",
-          componentHeader: "Komponente",
-          perWellHeader: "Pro Reaktion (µL)",
-          totalHeader: "Gesamt (µL)",
-          perWellVolumeLabel: "Volumen pro Reaktion (1x)",
-          bulkMixLabel: "Gesamt-Mastermix",
-          westernMembranesLabel: "Anzahl Membranen",
-          westernSizeLabel: "Membranmaß",
-          westernMini: "Mini-Gel (7×8 cm)",
-          westernMidi: "Midi-Gel (8×10 cm)",
-          westernCustom: "Benutzerdefiniert",
-          westernCoverageLabel: "Abdeckungsrate (mL/cm²)",
-          westernWidthLabel: "Breite (cm)",
-          westernHeightLabel: "Höhe (cm)",
-          westernPresetLabel: "Kommerzielles Kit-Preset",
-          westernPreset11: "Standard 1:1 Verhältnis",
-          westernPreset401: "40:1 Verhältnis",
-          totalWorkingVolumeLabel: "Gesamtarbeitsvolumen",
-          solutionALabel: "Lösung A",
-          solutionBLabel: "Lösung B",
-          dilutionSectionTitle: "Verdünnungsrechner",
-          stockCLabel: "C1",
-          finalCLabel: "C2",
-          unitLabel: "Einheit",
-          targetVolumeLabel: "Endvolumen (V2)",
-          volumeUnitLabel: "Volumeneinheit",
-          stockAliquotLabel: "Stammlösung (V1)",
-          bufferBalanceLabel: "Puffer ausgleichen",
-          massMolarityTitle: "Masse-/Molaritätskonverter",
-          targetConcLabel: "Zielkonzentration",
-          massConcUnitLabel: "Konzentrationseinheit",
-          molecularWeightLabel: "Molekulargewicht",
-          massVolumeUnitLabel: "Volumeneinheit",
-          massRequiredLabel: "Benötigte Masse",
-          massRequiredMgLabel: "Benötigte Masse (mg)",
-          sequenceInputLabel: "Sequenzeingabe",
-          sequencePlaceholder: "Rohe Sequenz oder FASTA hier einfügen…",
-          analyzeButton: "Sequenz analysieren",
-          sequenceHint: "DNA/RNA · FASTA unterstützt",
-          lengthLabel: "Länge",
-          gcLabel: "GC %",
-          atLabel: "AT %",
-          tmLabel: "Tm",
-          massRequiredMwLabel: "Geschätztes MW",
-          nucleotideCountsLabel: "Basenanzahl",
-          reverseComplementLabel: "Komplementärstrang",
-          translationLabel: "Proteintranslation (Frame 1)",
-          copyLabel: "Kopieren",
-          copyCopied: "Kopiert",
-          exportButton: "Lab Sheet exportieren",
-          exportModalTitle: "Exportformat wählen",
-          exportModalDesc: "Wählen Sie das Format für Ihr Labor-Arbeitsblatt.",
-          exportFormatWord: "Word-Dokument (.docx)",
-          exportFormatExcel: "Excel-Arbeitsmappe (.xls)",
-          exportFormatCsv: "Kommagetrennte Werte (.csv)",
-          exportFormatTxt: "Reiner Text (.txt)",
-          footerText: "Entwickelt für schnelle Planung, Laborberechnungen und Sequenzprüfung in der Molekularbiologie.",
-          alertInvalidInput: "Bitte geben Sie gültige, nicht-negative Werte ein.",
-          alertC1Greater: "C1 muss größer als C2 sein, um eine realistische Verdünnung zu berechnen.",
-          alertInvalidBase: "Die Sequenz enthält nicht unterstützte IUPAC-Nukleotidbasen. Bitte prüfen Sie die Eingabe."
-        }
-      };
-
-      const state = {
-        language: "en",
-        appAlertTimer: null
-      };
-
-      const codonTable = {
-        TTT: "F", TTC: "F", TTA: "L", TTG: "L",
-        TCT: "S", TCC: "S", TCA: "S", TCG: "S",
-        TAT: "Y", TAC: "Y", TAA: "*", TAG: "*",
-        TGT: "C", TGC: "C", TGA: "*", TGG: "W",
-        CTT: "L", CTC: "L", CTA: "L", CTG: "L",
-        CCT: "P", CCC: "P", CCA: "P", CCG: "P",
-        CAT: "H", CAC: "H", CAA: "Q", CAG: "Q",
-        CGT: "R", CGC: "R", CGA: "R", CGG: "R",
-        ATT: "I", ATC: "I", ATA: "I", ATG: "M",
-        ACT: "T", ACC: "T", ACA: "T", ACG: "T",
-        AAT: "N", AAC: "N", AAA: "K", AAG: "K",
-        AGT: "S", AGC: "S", AGA: "R", AGG: "R",
-        GTT: "V", GTC: "V", GTA: "V", GTG: "V",
-        GCT: "A", GCC: "A", GCA: "A", GCG: "A",
-        GAT: "D", GAC: "D", GAA: "E", GAG: "E",
-        GGT: "G", GGC: "G", GGA: "G", GGG: "G",
-
-        UUU: "F", UUC: "F", UUA: "L", UUG: "L",
-        UCU: "S", UCC: "S", UCA: "S", UCG: "S",
-        UAU: "Y", UAC: "Y", UAA: "*", UAG: "*",
-        UGU: "C", UGC: "C", UGA: "*", UGG: "W",
-        CUU: "L", CUC: "L", CUA: "L", CUG: "L",
-        CCU: "P", CCC: "P", CCA: "P", CCG: "P",
-        CAU: "H", CAC: "H", CAA: "Q", CAG: "Q",
-        CGU: "R", CGC: "R", CGA: "R", CGG: "R",
-        AUU: "I", AUC: "I", AUA: "I", AUG: "M",
-        ACU: "T", ACC: "T", ACA: "T", ACG: "T",
-        AAU: "N", AAC: "N", AAA: "K", AAG: "K",
-        AGU: "S", AGC: "S", AGA: "R", AGG: "R",
-        GUU: "V", GUC: "V", GUA: "V", GUG: "V",
-        GCU: "A", GCC: "A", GCA: "A", GCG: "A",
-        GAU: "D", GAC: "D", GAA: "E", GAG: "E",
-        GGU: "G", GGC: "G", GGA: "G", GGG: "G"
-      };
-
-      const allowedBases = /^[ACGTURYKMSWBDHVN]+$/i;
-      const baseComplement = {
-        A: "T",
-        T: "A",
-        U: "A",
-        C: "G",
-        G: "C",
-        R: "Y",
-        Y: "R",
-        K: "M",
-        M: "K",
-        S: "S",
-        W: "W",
-        B: "V",
-        V: "B",
-        D: "H",
-        H: "D",
-        N: "N"
-      };
-
-      function getTranslation(lang, key) {
-        return (translations[lang] && translations[lang][key]) || translations.en[key] || key;
-      }
-
-      function applyTranslations() {
-        document.documentElement.lang = state.language;
-        document.documentElement.setAttribute("dir", state.language === "fa" ? "rtl" : "ltr");
-        document.body.setAttribute("dir", state.language === "fa" ? "rtl" : "ltr");
-
-        const nodes = document.querySelectorAll("[data-i18n]");
-        nodes.forEach((node) => {
-          const key = node.getAttribute("data-i18n");
-          const value = getTranslation(state.language, key);
-          if (node.tagName === "INPUT" || node.tagName === "TEXTAREA") {
-            node.placeholder = value;
-          } else if (node.classList.contains("export-format-btn")) {
-            const label = node.querySelector("span");
-            if (label) label.textContent = value;
-          } else {
-            node.textContent = value;
-          }
-        });
-
-        document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
-          const key = node.getAttribute("data-i18n-placeholder");
-          node.placeholder = getTranslation(state.language, key);
-        });
-
-        const languageLabel = document.getElementById("selectedLanguageLabel");
-        if (languageLabel) {
-          languageLabel.textContent = state.language.toUpperCase();
-        }
-
-        document.querySelectorAll(".dropdown-item").forEach((item) => {
-          item.classList.toggle("active", item.dataset.lang === state.language);
-        });
-
-        document.querySelectorAll(".copy-btn").forEach((button) => {
-          const label = getTranslation(state.language, "copyLabel");
-          button.setAttribute("title", label);
-          button.setAttribute("aria-label", label);
-          const icon = button.querySelector("i");
-          if (icon) {
-            icon.className = "bi bi-clipboard";
-          }
-          button.classList.remove("copied");
-        });
-
-        updatePCR();
-        updateWestern();
-        updateDilution();
-        updateMassMolarity();
-        analyzeSequence();
-      }
-
-      function showAlert(messageKey, type = "info") {
-        const alertEl = document.getElementById("appAlert");
-        if (!alertEl) return;
-        const message = getTranslation(state.language, messageKey);
-        alertEl.className = `alert alert-${type} alert-banner show`;
-        alertEl.textContent = message;
-        if (state.appAlertTimer) clearTimeout(state.appAlertTimer);
-        state.appAlertTimer = setTimeout(() => {
-          alertEl.classList.remove("show");
-          alertEl.className = "alert alert-banner";
-        }, 3500);
-      }
-
-      function convertToBaseConcentration(value, unit) {
-        return Number(value) * Number(unit);
-      }
-
-      function convertToBaseVolume(value, unit) {
-        return Number(value) * Number(unit);
-      }
-
-      function calculatePCR() {
-        const wells = Number(document.getElementById("pcrWells").value) || 0;
-        const reactionVolume = Number(document.getElementById("pcrVolume").value) || 0;
-        const excess = Number(document.getElementById("pcrExcess").value) || 0;
-
-        if (wells <= 0 || reactionVolume <= 0 || excess < 0) {
-          showAlert("alertInvalidInput", "warning");
-          return null;
-        }
-
-        const masterMix = reactionVolume * 0.5;
-        const forwardPrimer = reactionVolume * 0.02;
-        const reversePrimer = reactionVolume * 0.02;
-        const templateDNA = reactionVolume * 0.04;
-        const water = Math.max(0, reactionVolume - (masterMix + forwardPrimer + reversePrimer + templateDNA));
-        const scale = wells * (1 + excess / 100);
-
-        return {
-          perWell: { masterMix, forwardPrimer, reversePrimer, templateDNA, water },
-          total: {
-            masterMix: masterMix * scale,
-            forwardPrimer: forwardPrimer * scale,
-            reversePrimer: reversePrimer * scale,
-            templateDNA: templateDNA * wells,
-            water: water * scale
-          },
-          totalBulkMix: (masterMix + forwardPrimer + reversePrimer + water) * scale
-        };
-      }
-
-      function updatePCR() {
-        const result = calculatePCR();
-        const tbody = document.getElementById("pcrTableBody");
-        if (!tbody) return;
-
-        if (!result) {
-          tbody.innerHTML = "";
-          document.getElementById("pcrPerWellValue").textContent = "0.00 µL";
-          document.getElementById("pcrBulkValue").textContent = "0.00 µL";
-          return;
-        }
-
-        const rows = [
-          { name: "2X Master Mix", perWell: result.perWell.masterMix, total: result.total.masterMix },
-          { name: "Forward Primer (10 µM)", perWell: result.perWell.forwardPrimer, total: result.total.forwardPrimer },
-          { name: "Reverse Primer (10 µM)", perWell: result.perWell.reversePrimer, total: result.total.reversePrimer },
-          { name: "Template DNA", perWell: result.perWell.templateDNA, total: result.total.templateDNA },
-          { name: "Nuclease-free H2O", perWell: result.perWell.water, total: result.total.water }
-        ];
-
-        tbody.innerHTML = rows.map((row) => `
-          <tr>
-            <td>${row.name}</td>
-            <td class="text-center">${Number(row.perWell).toFixed(2)}</td>
-            <td class="text-center">${Number(row.total).toFixed(2)}</td>
-          </tr>
-        `).join("");
-
-        const perWellTotal = result.perWell.masterMix + result.perWell.forwardPrimer + result.perWell.reversePrimer + result.perWell.templateDNA + result.perWell.water;
-        document.getElementById("pcrPerWellValue").textContent = `${Number(perWellTotal).toFixed(2)} µL`;
-        document.getElementById("pcrBulkValue").textContent = `${Number(result.totalBulkMix).toFixed(2)} µL`;
-      }
-
-      function calculateWestern() {
-        const membranes = Number(document.getElementById("westernMembranes").value) || 0;
-        const size = document.getElementById("westernSizeSelect").value;
-        const coverageRate = Number(document.getElementById("westernCoverage").value) || 0;
-        const preset = document.getElementById("westernPreset").value;
-
-        let width = 7;
-        let height = 8;
-
-        if (size === "midi") {
-          width = 8;
-          height = 10;
-        } else if (size === "custom") {
-          width = Number(document.getElementById("westernWidth").value) || 0;
-          height = Number(document.getElementById("westernHeight").value) || 0;
-        }
-
-        if (membranes <= 0 || coverageRate < 0 || width <= 0 || height <= 0) {
-          showAlert("alertInvalidInput", "warning");
-          return null;
-        }
-
-        const area = membranes * width * height;
-        const totalVolume = area * coverageRate;
-
-        const ratioA = preset === "40:1" ? 40 / 41 : 0.5;
-        const ratioB = preset === "40:1" ? 1 / 41 : 0.5;
-
-        return {
-          totalVolume,
-          solutionA: totalVolume * ratioA,
-          solutionB: totalVolume * ratioB
-        };
-      }
-
-      function updateWestern() {
-        const group = document.getElementById("westernCustomSizeGroup");
-        const select = document.getElementById("westernSizeSelect");
-        if (group && select) {
-          group.classList.toggle("show", select.value === "custom");
-        }
-
-        const result = calculateWestern();
-        if (!result) {
-          document.getElementById("westernTotalVolume").textContent = "0.00 mL";
-          document.getElementById("westernSolutionA").textContent = "0.00 mL";
-          document.getElementById("westernSolutionB").textContent = "0.00 mL";
-          return;
-        }
-
-        document.getElementById("westernTotalVolume").textContent = `${Number(result.totalVolume).toFixed(2)} mL`;
-        document.getElementById("westernSolutionA").textContent = `${Number(result.solutionA).toFixed(2)} mL`;
-        document.getElementById("westernSolutionB").textContent = `${Number(result.solutionB).toFixed(2)} mL`;
-      }
-
-      function calculateDilution() {
-        const c1 = Number(document.getElementById("dilutionC1").value) || 0;
-        const c2 = Number(document.getElementById("dilutionC2").value) || 0;
-        const c1Unit = Number(document.getElementById("dilutionC1Unit").value) || 1;
-        const c2Unit = Number(document.getElementById("dilutionC2Unit").value) || 1;
-        const v2 = Number(document.getElementById("dilutionV2").value) || 0;
-        const v2Unit = Number(document.getElementById("dilutionV2Unit").value) || 1;
-
-        if ([c1, c2, v2].some((n) => n < 0) || c1 <= 0 || c2 <= 0 || v2 <= 0) {
-          showAlert("alertInvalidInput", "warning");
-          return null;
-        }
-
-        const c1Base = convertToBaseConcentration(c1, c1Unit);
-        const c2Base = convertToBaseConcentration(c2, c2Unit);
-        const v2Base = convertToBaseVolume(v2, v2Unit);
-
-        if (c1Base <= c2Base) {
-          showAlert("alertC1Greater", "warning");
-          return null;
-        }
-
-        const v1Base = (c2Base * v2Base) / c1Base;
-        const bufferBase = v2Base - v1Base;
-        return { v1Base, bufferBase, v2Base };
-      }
-
-      function updateDilution() {
-        const result = calculateDilution();
-        const v1Output = document.getElementById("dilutionV1Output");
-        const bufferOutput = document.getElementById("dilutionBufferOutput");
-
-        if (!result) {
-          v1Output.textContent = "0.00 µL";
-          bufferOutput.textContent = "0.00 µL";
-          return;
-        }
-
-        const v1InMicro = result.v1Base * 1e6;
-        const bufferInMicro = result.bufferBase * 1e6;
-        v1Output.textContent = `${Number(v1InMicro).toFixed(2)} µL`;
-        bufferOutput.textContent = `${Number(bufferInMicro).toFixed(2)} µL`;
-      }
-
-      function calculateMassMolarity() {
-        const concentration = Number(document.getElementById("massConc").value) || 0;
-        const concentrationUnit = Number(document.getElementById("massConcUnit").value) || 1;
-        const volume = Number(document.getElementById("massVolume").value) || 0;
-        const volumeUnit = Number(document.getElementById("massVolumeUnit").value) || 1;
-        const molecularWeight = Number(document.getElementById("massMw").value) || 0;
-
-        if (concentration < 0 || volume < 0 || molecularWeight < 0) {
-          showAlert("alertInvalidInput", "warning");
-          return null;
-        }
-
-        const concentrationBase = convertToBaseConcentration(concentration, concentrationUnit);
-        const volumeBase = convertToBaseVolume(volume, volumeUnit);
-        const moles = concentrationBase * volumeBase;
-        const massG = moles * molecularWeight;
-
-        return { massG, massMg: massG * 1000 };
-      }
-
-      function updateMassMolarity() {
-        const result = calculateMassMolarity();
-        const massG = document.getElementById("massResultG");
-        const massMg = document.getElementById("massResultMg");
-
-        if (!result) {
-          massG.textContent = "0.0000 g";
-          massMg.textContent = "0.00 mg";
-          return;
-        }
-
-        massG.textContent = `${Number(result.massG).toFixed(4)} g`;
-        massMg.textContent = `${Number(result.massMg).toFixed(2)} mg`;
-      }
-
-      function normalizeSequence(rawSequence) {
-        if (!rawSequence) return { sequence: "", valid: false, error: "empty" };
-
-        let sequence = rawSequence
-          .replace(/^>.*$/gm, "")
-          .replace(/\s+/g, "")
-          .replace(/\d+/g, "")
-          .toUpperCase();
-
-        if (!sequence) return { sequence: "", valid: false, error: "empty" };
-
-        if (!allowedBases.test(sequence)) {
-          return { sequence, valid: false, error: "invalid" };
-        }
-
-        return { sequence: sequence.replace(/U/g, "T"), valid: true, error: null };
-      }
-
-      function reverseComplement(seq) {
-        return seq
-          .split("")
-          .reverse()
-          .map((base) => baseComplement[base] || base)
-          .join("");
-      }
-
-      function translateDNA(seq) {
-        const codons = [];
-        for (let i = 0; i + 2 < seq.length; i += 3) {
-          codons.push(codonTable[seq.slice(i, i + 3).toUpperCase()] || "X");
-        }
-        return codons.join("");
-      }
-
-      function calculateTm(seq) {
-        if (!seq || seq.length === 0) return 0;
-        const gc = (seq.match(/[GC]/g) || []).length;
-        const at = (seq.match(/[AT]/g) || []).length;
-        if (seq.length < 14) {
-          return (at * 2) + (gc * 4);
-        }
-        return 64.9 + 41 * ((gc - 16.4) / seq.length);
-      }
-
-      function calculateSequenceMetrics(rawSequence) {
-        const normalized = normalizeSequence(rawSequence);
-        if (!normalized.valid) {
-          return null;
-        }
-
-        const seq = normalized.sequence;
-        const length = seq.length;
-        const gcCount = (seq.match(/[GC]/g) || []).length;
-        const atCount = (seq.match(/[AT]/g) || []).length;
-        const gcPct = length ? (gcCount / length) * 100 : 0;
-        const atPct = length ? (atCount / length) * 100 : 0;
-
-        const baseCounts = {
-          A: (seq.match(/A/g) || []).length,
-          T: (seq.match(/T/g) || []).length,
-          C: (seq.match(/C/g) || []).length,
-          G: (seq.match(/G/g) || []).length
-        };
-
-        const massDa =
-          baseCounts.A * 313.21 +
-          baseCounts.T * 304.2 +
-          baseCounts.C * 289.18 +
-          baseCounts.G * 329.21 -
-          61.96;
-
-        return {
-          length,
-          gcPct,
-          atPct,
-          mw: length ? massDa / 1000 : 0,
-          counts: baseCounts,
-          reverseComplement: reverseComplement(seq),
-          protein: translateDNA(seq),
-          tm: calculateTm(seq)
-        };
-      }
-
-      function analyzeSequence() {
-        const seqInput = document.getElementById("sequenceInput");
-        const metrics = calculateSequenceMetrics(seqInput.value);
-
-        if (!metrics) {
-          const inputValue = seqInput.value.trim();
-          if (!inputValue) {
-            document.getElementById("seqLength").textContent = "0 nt";
-            document.getElementById("seqGc").textContent = "0.00%";
-            document.getElementById("seqAt").textContent = "0.00%";
-            document.getElementById("seqMw").textContent = "0.00 kDa";
-            document.getElementById("seqTm").textContent = "0.00 °C";
-            document.getElementById("seqCounts").textContent = "A: 0 · T/U: 0 · C: 0 · G: 0";
-            document.getElementById("seqReverse").textContent = "-";
-            document.getElementById("seqTranslation").textContent = "-";
-            return;
-          }
-          showAlert("alertInvalidBase", "danger");
-          return;
-        }
-
-        document.getElementById("seqLength").textContent = `${metrics.length} nt`;
-        document.getElementById("seqGc").textContent = `${metrics.gcPct.toFixed(2)}%`;
-        document.getElementById("seqAt").textContent = `${metrics.atPct.toFixed(2)}%`;
-        document.getElementById("seqMw").textContent = `${Number(metrics.mw).toFixed(2)} kDa`;
-        document.getElementById("seqTm").textContent = `${Number(metrics.tm).toFixed(2)} °C`;
-        document.getElementById("seqCounts").textContent = `A: ${metrics.counts.A} · T/U: ${metrics.counts.T} · C: ${metrics.counts.C} · G: ${metrics.counts.G}`;
-        document.getElementById("seqReverse").textContent = metrics.reverseComplement || "-";
-        document.getElementById("seqTranslation").textContent = metrics.protein || "-";
-      }
-
-      async function copyOutput(targetId) {
-        const target = document.getElementById(targetId);
-        if (!target) return;
-        const text = target.textContent.trim();
-        if (!text || text === "-") return;
-
-        const copyButton = document.querySelector(`[data-copy-target="${targetId}"]`);
-        try {
-          await navigator.clipboard.writeText(text);
-          if (copyButton) {
-            copyButton.classList.add("copied");
-            const icon = copyButton.querySelector("i");
-            if (icon) icon.className = "bi bi-check-lg";
-            copyButton.setAttribute("title", getTranslation(state.language, "copyCopied"));
-            copyButton.setAttribute("aria-label", getTranslation(state.language, "copyCopied"));
-          }
-          setTimeout(() => {
-            if (copyButton) {
-              copyButton.classList.remove("copied");
-              const icon = copyButton.querySelector("i");
-              if (icon) icon.className = "bi bi-clipboard";
-              copyButton.setAttribute("title", getTranslation(state.language, "copyLabel"));
-              copyButton.setAttribute("aria-label", getTranslation(state.language, "copyLabel"));
-            }
-          }, 1200);
-        } catch (error) {
-          const textarea = document.createElement("textarea");
-          textarea.value = text;
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand("copy");
-          document.body.removeChild(textarea);
-          if (copyButton) {
-            copyButton.classList.add("copied");
-            const icon = copyButton.querySelector("i");
-            if (icon) icon.className = "bi bi-check-lg";
-          }
-          setTimeout(() => {
-            if (copyButton) {
-              copyButton.classList.remove("copied");
-              const icon = copyButton.querySelector("i");
-              if (icon) icon.className = "bi bi-clipboard";
-            }
-          }, 1200);
-        }
-      }
-
-      function getLabSheetSections() {
-        const pcr = calculatePCR();
-        const western = calculateWestern();
-        const dilution = calculateDilution();
-        const mass = calculateMassMolarity();
-        const sequence = calculateSequenceMetrics(document.getElementById("sequenceInput").value);
-
-        const sections = [{ title: "Document Information", rows: [
-          ["Worksheet", "BioTech Lab Assistant | Laboratory Worksheet"],
-          ["Prepared", new Date().toLocaleString()]
-        ]}];
-
-        const pcrRows = [];
-
-        if (pcr) {
-          pcrRows.push(
-            ["Reaction Count", document.getElementById("pcrWells").value],
-            ["Reaction Volume", `${document.getElementById("pcrVolume").value} µL`],
-            ["Overage", `${document.getElementById("pcrExcess").value}%`],
-            ["Per-Reaction Volume", `${Number(pcr.perWell.masterMix + pcr.perWell.forwardPrimer + pcr.perWell.reversePrimer + pcr.perWell.templateDNA + pcr.perWell.water).toFixed(2)} µL`],
-            ["Master Mix Total", `${Number(pcr.totalBulkMix).toFixed(2)} µL`],
-            ["2X Master Mix", `${Number(pcr.perWell.masterMix).toFixed(2)} µL / well`],
-            ["Forward Primer", `${Number(pcr.perWell.forwardPrimer).toFixed(2)} µL / well`],
-            ["Reverse Primer", `${Number(pcr.perWell.reversePrimer).toFixed(2)} µL / well`],
-            ["Template DNA", `${Number(pcr.perWell.templateDNA).toFixed(2)} µL / well`],
-            ["Nuclease-free H2O", `${Number(pcr.perWell.water).toFixed(2)} µL / well`]
-          );
-        }
-        sections.push({ title: "PCR Master Mix Setup", rows: pcrRows });
-
-        const westernRows = [];
-        if (western) {
-          westernRows.push(
-            ["Membrane Count", document.getElementById("westernMembranes").value],
-            ["Coverage Rate", `${document.getElementById("westernCoverage").value} mL/cm²`],
-            ["Total Working Solution", `${Number(western.totalVolume).toFixed(2)} mL`],
-            ["Solution A", `${Number(western.solutionA).toFixed(2)} mL`],
-            ["Solution B", `${Number(western.solutionB).toFixed(2)} mL`]
-          );
-        }
-        sections.push({ title: "Western Blot ECL Working Solution", rows: westernRows });
-
-        const dilutionRows = [];
-        if (dilution) {
-          dilutionRows.push(
-            ["Stock Concentration (C1)", `${document.getElementById("dilutionC1").value} ${document.getElementById("dilutionC1Unit").options[document.getElementById("dilutionC1Unit").selectedIndex].text}`],
-            ["Target Concentration (C2)", `${document.getElementById("dilutionC2").value} ${document.getElementById("dilutionC2Unit").options[document.getElementById("dilutionC2Unit").selectedIndex].text}`],
-            ["Final Volume V2", `${document.getElementById("dilutionV2").value} ${document.getElementById("dilutionV2Unit").options[document.getElementById("dilutionV2Unit").selectedIndex].text}`],
-            ["Stock Aliquot (V1)", `${Number(dilution.v1Base * 1e6).toFixed(2)} µL`],
-            ["Diluent Volume", `${Number(dilution.bufferBase * 1e6).toFixed(2)} µL`]
-          );
-        }
-        sections.push({ title: "Dilution Preparation", rows: dilutionRows });
-
-        const massRows = [];
-        if (mass) {
-          massRows.push(
-            ["Target Concentration", `${document.getElementById("massConc").value} ${document.getElementById("massConcUnit").options[document.getElementById("massConcUnit").selectedIndex].text}`],
-            ["Target Volume", `${document.getElementById("massVolume").value} ${document.getElementById("massVolumeUnit").options[document.getElementById("massVolumeUnit").selectedIndex].text}`],
-            ["Molecular Weight", `${document.getElementById("massMw").value} g/mol`],
-            ["Required Mass", `${Number(mass.massG).toFixed(4)} g (${Number(mass.massMg).toFixed(2)} mg)`]
-          );
-        }
-        sections.push({ title: "Mass and Molarity Preparation", rows: massRows });
-
-        const sequenceRows = [];
-        if (sequence) {
-          sequenceRows.push(
-            ["Length", `${sequence.length} nt`],
-            ["GC %", `${Number(sequence.gcPct).toFixed(2)}%`],
-            ["AT %", `${Number(sequence.atPct).toFixed(2)}%`],
-            ["Tm", `${Number(sequence.tm).toFixed(2)} °C`],
-            ["Estimated MW", `${Number(sequence.mw).toFixed(2)} kDa`],
-            ["Reverse Complement", sequence.reverseComplement],
-            ["Translation", sequence.protein]
-          );
-        }
-        sections.push({ title: "Sequence Analysis Summary", rows: sequenceRows });
-        return sections;
-      }
-
-      function escapeExportCell(value) {
-        return `"${String(value).replace(/"/g, '""')}"`;
-      }
-
-      function buildTextExport(sections) {
-        return sections.flatMap((section) => [section.title, ...section.rows.map((row) => `${row[0]}: ${row[1]}`), ""]).join("\n").trim();
-      }
-
-      function buildCsvExport(sections) {
-        return sections.flatMap((section) => [
-          [section.title, ""],
-          ...section.rows
-        ]).map((row) => row.map(escapeExportCell).join(",")).join("\r\n");
-      }
-
-      function buildExcelExport(sections) {
-        const rows = sections.flatMap((section) => [
-          `<tr><th colspan="2">${section.title}</th></tr>`,
-          ...section.rows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`),
-          '<tr><td colspan="2"></td></tr>'
-        ]).join("");
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BioTech Lab Assistant Laboratory Worksheet</title></head><body><table border="1"><tr><th>Item</th><th>Value</th></tr>${rows}</table></body></html>`;
-      }
-
-      function escapeXml(value) {
-        return String(value)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&apos;");
-      }
-
-      async function buildWordExport(sections) {
-        const body = [
-          `<w:p><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t>BioTech Lab Assistant | Laboratory Worksheet</w:t></w:r></w:p>`,
-          `<w:p><w:r><w:t>Prepared: ${escapeXml(new Date().toLocaleString())}</w:t></w:r></w:p>`
-        ];
-
-        sections.forEach((section) => {
-          body.push(`<w:p><w:r><w:rPr><w:b/><w:sz w:val="26"/></w:rPr><w:t>${escapeXml(section.title)}</w:t></w:r></w:p>`);
-          section.rows.forEach((row) => {
-            body.push(`<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>${escapeXml(row[0])}: </w:t></w:r><w:r><w:t>${escapeXml(row[1])}</w:t></w:r></w:p>`);
-          });
-        });
-
-        const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body.join("")}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`;
-        const zip = new JSZip();
-        zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
-        zip.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
-        zip.file("word/document.xml", documentXml);
-        return zip.generateAsync({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-      }
-
-      async function downloadExport(format) {
-        const sections = getLabSheetSections();
-        const exports = {
-          txt: {
-            content: buildTextExport(sections),
-            type: "text/plain;charset=utf-8",
-            extension: "txt"
-          },
-          csv: {
-            content: buildCsvExport(sections),
-            type: "text/csv;charset=utf-8",
-            extension: "csv"
-          },
-          xls: {
-            content: buildExcelExport(sections),
-            type: "application/vnd.ms-excel;charset=utf-8",
-            extension: "xls"
-          },
-          docx: {
-            content: await buildWordExport(sections),
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            extension: "docx"
-          }
-        };
-        const selected = exports[format] || exports.txt;
-        const blob = new Blob([selected.content], { type: selected.type });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `BioTech_Lab_Assistant_Laboratory_Worksheet.${selected.extension}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
-
-      function exportLabSheet() {
-        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("exportFormatModal"));
-        modal.show();
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const elements = [
-          document.getElementById("pcrWells"),
-          document.getElementById("pcrVolume"),
-          document.getElementById("pcrExcess"),
-          document.getElementById("westernMembranes"),
-          document.getElementById("westernCoverage"),
-          document.getElementById("westernSizeSelect"),
-          document.getElementById("westernWidth"),
-          document.getElementById("westernHeight"),
-          document.getElementById("westernPreset"),
-          document.getElementById("dilutionC1"),
-          document.getElementById("dilutionC2"),
-          document.getElementById("dilutionV2"),
-          document.getElementById("massConc"),
-          document.getElementById("massMw"),
-          document.getElementById("massVolume"),
-          document.getElementById("sequenceInput")
-        ];
-
-        elements.forEach((el) => {
-          if (!el) return;
-          el.addEventListener("input", () => {
-            updatePCR();
-            updateWestern();
-            updateDilution();
-            updateMassMolarity();
-            analyzeSequence();
-          });
-          el.addEventListener("change", () => {
-            updatePCR();
-            updateWestern();
-            updateDilution();
-            updateMassMolarity();
-            analyzeSequence();
-          });
-        });
-
-        const westernSizeSelect = document.getElementById("westernSizeSelect");
-        if (westernSizeSelect) {
-          westernSizeSelect.addEventListener("change", updateWestern);
-        }
-
-        const analyzeBtn = document.getElementById("analyzeSequenceBtn");
-        if (analyzeBtn) {
-          analyzeBtn.addEventListener("click", analyzeSequence);
-        }
-
-        const exportBtn = document.getElementById("exportLabSheetBtn");
-        if (exportBtn) {
-          exportBtn.addEventListener("click", exportLabSheet);
-        }
-
-        document.querySelectorAll("[data-export-format]").forEach((button) => {
-          button.addEventListener("click", () => {
-            downloadExport(button.dataset.exportFormat);
-            bootstrap.Modal.getOrCreateInstance(document.getElementById("exportFormatModal")).hide();
-          });
-        });
-
-        document.querySelectorAll("[data-copy-target]").forEach((button) => {
-          button.addEventListener("click", () => copyOutput(button.dataset.copyTarget));
-        });
-
-        document.querySelectorAll("[data-lang]").forEach((button) => {
-          button.addEventListener("click", () => {
-            state.language = button.dataset.lang;
-            applyTranslations();
-          });
-        });
-
-        applyTranslations();
-      });
-    </script>
-  </body>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end mb-3">
+    <button id="exportLabSheetBtn" class="btn btn-success" type="button"><i class="bi bi-download me-2"></i><span data-i18n="exportButton">Export Lab Sheet</span></button>
+  </div>
+
+  <div class="row g-4">
+    <!-- PCR -->
+    <div class="col-xl-6">
+      <section class="card section-card h-100"><div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex align-items-center gap-3"><span class="module-icon"><i class="bi bi-thermometer-half"></i></span><h4 class="mb-0" data-i18n="pcrTitle">PCR Master Mix Calculator</h4></div>
+          <span class="badge badge-soft rounded-pill" data-i18n="moduleMolecular">Molecular</span>
+        </div>
+        <div class="tool-note mb-3" data-i18n="pcrNote">Example PCR setup. Adjust primer, template, and reagent volumes according to your PCR kit and laboratory protocol.</div>
+        <div class="row g-3">
+          <div class="col-md-4"><label class="form-label" data-i18n="pcrWellsLabel">Number of wells (n)</label><input id="pcrWells" type="number" class="form-control" min="1" step="1" value="8" /></div>
+          <div class="col-md-4"><label class="form-label" data-i18n="pcrVolumeLabel">Reaction volume (µL)</label><input id="pcrVolume" type="number" class="form-control" min="1" step="0.1" value="25" /></div>
+          <div class="col-md-4"><label class="form-label" data-i18n="pcrExcessLabel">Excess margin (%)</label><input id="pcrExcess" type="number" class="form-control" min="0" step="0.1" value="10" /></div>
+        </div>
+        <div class="table-responsive mt-4"><table class="table table-sm align-middle table-hover"><thead><tr><th data-i18n="componentHeader">Component</th><th class="text-center" data-i18n="perWellHeader">Per well (µL)</th><th class="text-center" data-i18n="totalHeader">Total (µL)</th></tr></thead><tbody id="pcrTableBody"></tbody></table></div>
+        <div class="row g-3 mt-1">
+          <div class="col-md-6"><div class="result-box d-flex justify-content-between"><span data-i18n="perWellVolumeLabel">Per-well volume (1x)</span><strong id="pcrPerWellValue" class="readout">25.00 µL</strong></div></div>
+          <div class="col-md-6"><div class="result-box d-flex justify-content-between"><span data-i18n="bulkMixLabel">Total bulk master mix</span><strong id="pcrBulkValue" class="readout">0.00 µL</strong></div></div>
+        </div>
+      </div></section>
+    </div>
+
+    <!-- Western -->
+    <div class="col-xl-6">
+      <section class="card section-card h-100"><div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex align-items-center gap-3"><span class="module-icon"><i class="bi bi-sliders"></i></span><h4 class="mb-0" data-i18n="westernTitle">Western Blot ECL Substrate Calculator</h4></div>
+          <span class="badge badge-soft rounded-pill" data-i18n="moduleImmuno">Immunoassay</span>
+        </div>
+        <div class="tool-note mb-3" data-i18n="westernNote">Coverage and reagent ratios are presets. Always follow the instructions for the ECL kit you use.</div>
+        <div class="row g-3">
+          <div class="col-md-4"><label class="form-label" data-i18n="westernMembranesLabel">Number of membranes</label><input id="westernMembranes" type="number" class="form-control" min="1" step="1" value="2" /></div>
+          <div class="col-md-4"><label class="form-label" data-i18n="westernSizeLabel">Membrane size</label><select id="westernSizeSelect" class="form-select"><option value="mini" data-i18n="westernMini">Mini-gel (7×8 cm)</option><option value="midi" data-i18n="westernMidi">Midi-gel (8×10 cm)</option><option value="custom" data-i18n="westernCustom">Custom</option></select></div>
+          <div class="col-md-4"><label class="form-label" data-i18n="westernCoverageLabel">Coverage rate (mL/cm²)</label><input id="westernCoverage" type="number" class="form-control" min="0.001" step="0.001" value="0.1" /></div>
+        </div>
+        <div class="custom-size-group mt-3" id="westernCustomSizeGroup"><div class="row g-3"><div class="col-md-6"><label class="form-label" data-i18n="westernWidthLabel">Width (cm)</label><input id="westernWidth" type="number" class="form-control" min="0.1" step="0.1" value="8" /></div><div class="col-md-6"><label class="form-label" data-i18n="westernHeightLabel">Height (cm)</label><input id="westernHeight" type="number" class="form-control" min="0.1" step="0.1" value="10" /></div></div></div>
+        <div class="mt-3"><label class="form-label" data-i18n="westernPresetLabel">Commercial kit preset</label><select id="westernPreset" class="form-select"><option value="1:1" data-i18n="westernPreset11">1:1 ratio (common; verify kit)</option><option value="40:1" data-i18n="westernPreset401">40:1 ratio (kit-specific; verify kit)</option></select></div>
+        <div class="row g-3 mt-1">
+          <div class="col-md-4"><div class="result-box"><div class="small muted" data-i18n="totalWorkingVolumeLabel">Total working vol.</div><strong id="westernTotalVolume" class="readout">0.00 mL</strong></div></div>
+          <div class="col-md-4"><div class="result-box"><div class="small muted" data-i18n="solutionALabel">Solution A</div><strong id="westernSolutionA" class="readout">0.00 mL</strong></div></div>
+          <div class="col-md-4"><div class="result-box"><div class="small muted" data-i18n="solutionBLabel">Solution B</div><strong id="westernSolutionB" class="readout">0.00 mL</strong></div></div>
+        </div>
+      </div></section>
+    </div>
+
+    <!-- Dilution -->
+    <div class="col-xl-6">
+      <section class="card section-card h-100"><div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3"><div class="d-flex align-items-center gap-3"><span class="module-icon"><i class="bi bi-droplet-half"></i></span><h4 class="mb-0" data-i18n="dilutionTitle">Universal Dilution &amp; Molarity Converter</h4></div><span class="badge badge-soft rounded-pill" data-i18n="moduleQuantitation">Quantitation</span></div>
+        <h6 data-i18n="dilutionSectionTitle">Dilution Calculator</h6>
+        <div class="row g-3">
+          <div class="col-md-3"><label class="form-label">C1</label><input id="dilutionC1" type="number" class="form-control" min="0" step="0.000001" value="1" /></div>
+          <div class="col-md-3"><label class="form-label" data-i18n="unitLabel">Unit</label><select id="dilutionC1Unit" class="form-select"><option value="1">M</option><option value="0.001">mM</option><option value="0.000001">µM</option><option value="0.000000001">nM</option></select></div>
+          <div class="col-md-3"><label class="form-label">C2</label><input id="dilutionC2" type="number" class="form-control" min="0" step="0.000001" value="0.05" /></div>
+          <div class="col-md-3"><label class="form-label" data-i18n="unitLabel">Unit</label><select id="dilutionC2Unit" class="form-select"><option value="1">M</option><option value="0.001">mM</option><option value="0.000001">µM</option><option value="0.000000001">nM</option></select></div>
+        </div>
+        <div class="row g-3 mt-1"><div class="col-md-6"><label class="form-label" data-i18n="targetVolumeLabel">Final volume (V2)</label><input id="dilutionV2" type="number" class="form-control" min="0" step="0.1" value="1000" /></div><div class="col-md-6"><label class="form-label" data-i18n="volumeUnitLabel">Volume unit</label><select id="dilutionV2Unit" class="form-select"><option value="0.000001">µL</option><option value="0.001">mL</option><option value="1">L</option></select></div></div>
+        <div class="result-box mt-3"><div class="d-flex justify-content-between mb-2"><span data-i18n="stockAliquotLabel">Stock aliquot (V1)</span><strong id="dilutionV1Output" class="readout">0.00 µL</strong></div><div class="d-flex justify-content-between"><span data-i18n="bufferBalanceLabel">Balance buffer</span><strong id="dilutionBufferOutput" class="readout">0.00 µL</strong></div></div>
+        <hr />
+        <h6 data-i18n="massMolarityTitle">Mass / Molarity Converter</h6>
+        <div class="row g-3"><div class="col-md-4"><label class="form-label" data-i18n="targetConcLabel">Target concentration</label><input id="massConc" type="number" class="form-control" min="0" step="0.000001" value="0.1" /></div><div class="col-md-4"><label class="form-label" data-i18n="massConcUnitLabel">Concentration unit</label><select id="massConcUnit" class="form-select"><option value="1">M</option><option value="0.001">mM</option><option value="0.000001">µM</option><option value="0.000000001">nM</option></select></div><div class="col-md-4"><label class="form-label" data-i18n="molecularWeightLabel">Molecular weight</label><input id="massMw" type="number" class="form-control" min="0" step="0.1" value="180.16" /></div></div>
+        <div class="row g-3 mt-1"><div class="col-md-6"><label class="form-label" data-i18n="targetVolumeMassLabel">Target volume</label><input id="massVolume" type="number" class="form-control" min="0" step="0.1" value="10" /></div><div class="col-md-6"><label class="form-label" data-i18n="massVolumeUnitLabel">Volume unit</label><select id="massVolumeUnit" class="form-select"><option value="0.000001">µL</option><option value="0.001">mL</option><option value="1">L</option></select></div></div>
+        <div class="result-box mt-3"><div class="d-flex justify-content-between mb-2"><span data-i18n="massRequiredLabel">Required mass</span><strong id="massResultG" class="readout">0.0000 g</strong></div><div class="d-flex justify-content-between"><span data-i18n="massRequiredMgLabel">Required mass (mg)</span><strong id="massResultMg" class="readout">0.00 mg</strong></div></div>
+      </div></section>
+    </div>
+
+    <!-- Sequence -->
+    <div class="col-xl-6">
+      <section class="card section-card h-100"><div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3"><div class="d-flex align-items-center gap-3"><span class="module-icon"><i class="bi bi-dna"></i></span><h4 class="mb-0" data-i18n="sequenceTitle">Sequence Analysis &amp; GC Content Tool</h4></div><span class="badge badge-soft rounded-pill" data-i18n="moduleBioinfo">Bioinformatics</span></div>
+        <label class="form-label" data-i18n="sequenceInputLabel">Sequence input</label>
+        <textarea id="sequenceInput" class="form-control" rows="8" spellcheck="false" data-i18n-placeholder="sequencePlaceholder" placeholder="Paste one raw DNA/RNA sequence or one FASTA record here…"></textarea>
+        <div class="d-flex justify-content-between align-items-center mt-3 gap-2 flex-wrap"><button id="analyzeSequenceBtn" class="btn btn-primary" type="button"><i class="bi bi-play-circle me-1"></i><span data-i18n="analyzeButton">Analyze Sequence</span></button><small class="muted" data-i18n="sequenceHint">One DNA/RNA sequence · single FASTA record accepted</small></div>
+        <div id="seqStatus" class="small muted mt-2" data-i18n="sequenceBasicNote">Tm and MW are basic estimates for unmodified, canonical DNA oligos. Ambiguous bases or RNA return N/A for these two values.</div>
+        <div class="row g-2 mt-3">
+          <div class="col-md-6 col-lg-4"><div class="result-box"><div class="small muted" data-i18n="sequenceTypeLabel">Type</div><div id="seqType" class="readout">-</div></div></div>
+          <div class="col-md-6 col-lg-4"><div class="result-box"><div class="small muted" data-i18n="lengthLabel">Length</div><div id="seqLength" class="readout">0 nt</div></div></div>
+          <div class="col-md-6 col-lg-4"><div class="result-box"><div class="small muted" data-i18n="gcLabel">GC %</div><div id="seqGc" class="readout">0.00%</div></div></div>
+          <div class="col-md-6 col-lg-4"><div class="result-box"><div class="small muted" data-i18n="atLabel">AT/AU %</div><div id="seqAt" class="readout">0.00%</div></div></div>
+          <div class="col-md-6 col-lg-4"><div class="result-box"><div class="small muted" data-i18n="estimatedMwLabel">Estimated MW</div><div id="seqMw" class="readout">0.00 kDa</div></div></div>
+          <div class="col-md-6 col-lg-4"><div class="result-box"><div class="small muted" data-i18n="tmLabel">Estimated Tm</div><div id="seqTm" class="readout">0.00 °C</div></div></div>
+          <div class="col-12"><div class="result-box"><div class="small muted" data-i18n="nucleotideCountsLabel">Base counts</div><div id="seqCounts" class="readout small">A: 0 · T/U: 0 · C: 0 · G: 0</div></div></div>
+          <div class="col-12"><div class="result-box"><div class="small muted" data-i18n="reverseComplementLabel">Reverse complement</div><div class="result-output-wrap"><div id="seqReverse" class="readout small sequence-output flex-grow-1">-</div><button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy-target="seqReverse" title="Copy"><i class="bi bi-clipboard"></i></button></div></div></div>
+        </div>
+        <div class="mt-3"><h6 data-i18n="translationLabel">Protein translation (frame 1)</h6><div class="result-output-wrap result-box"><div id="seqTranslation" class="sequence-output fw-semibold flex-grow-1">-</div><button class="btn btn-outline-primary btn-sm copy-btn" type="button" data-copy-target="seqTranslation" title="Copy"><i class="bi bi-clipboard"></i></button></div></div>
+      </div></section>
+    </div>
+  </div>
+
+  <div class="mt-4 text-center footer-note"><span data-i18n="footerText">Educational tool for routine laboratory planning and basic sequence review. Verify experimental settings with your laboratory protocol.</span></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+const translations = {
+  en: {
+    brandTitle:"BioTech Lab Assistant", moduleMolecular:"Molecular", moduleImmuno:"Immunoassay", moduleQuantitation:"Quantitation", moduleBioinfo:"Bioinformatics",
+    pcrTitle:"PCR Master Mix Calculator", pcrNote:"Example PCR setup. Adjust primer, template, and reagent volumes according to your PCR kit and laboratory protocol.",
+    pcrWellsLabel:"Number of wells (n)", pcrVolumeLabel:"Reaction volume (µL)", pcrExcessLabel:"Excess margin (%)", componentHeader:"Component", perWellHeader:"Per well (µL)", totalHeader:"Total (µL)", perWellVolumeLabel:"Per-well volume (1x)", bulkMixLabel:"Total bulk master mix",
+    westernTitle:"Western Blot ECL Substrate Calculator", westernNote:"Coverage and reagent ratios are presets. Always follow the instructions for the ECL kit you use.", westernMembranesLabel:"Number of membranes", westernSizeLabel:"Membrane size", westernMini:"Mini-gel (7×8 cm)", westernMidi:"Midi-gel (8×10 cm)", westernCustom:"Custom", westernCoverageLabel:"Coverage rate (mL/cm²)", westernWidthLabel:"Width (cm)", westernHeightLabel:"Height (cm)", westernPresetLabel:"Commercial kit preset", westernPreset11:"1:1 ratio (common; verify kit)", westernPreset401:"40:1 ratio (kit-specific; verify kit)", totalWorkingVolumeLabel:"Total working vol.", solutionALabel:"Solution A", solutionBLabel:"Solution B",
+    dilutionTitle:"Universal Dilution & Molarity Converter", dilutionSectionTitle:"Dilution Calculator", unitLabel:"Unit", targetVolumeLabel:"Final volume (V2)", volumeUnitLabel:"Volume unit", stockAliquotLabel:"Stock aliquot (V1)", bufferBalanceLabel:"Balance buffer", massMolarityTitle:"Mass / Molarity Converter", targetConcLabel:"Target concentration", massConcUnitLabel:"Concentration unit", molecularWeightLabel:"Molecular weight", targetVolumeMassLabel:"Target volume", massVolumeUnitLabel:"Volume unit", massRequiredLabel:"Required mass", massRequiredMgLabel:"Required mass (mg)",
+    sequenceTitle:"Sequence Analysis & GC Content Tool", sequenceInputLabel:"Sequence input", sequencePlaceholder:"Paste one raw DNA/RNA sequence or one FASTA record here…", analyzeButton:"Analyze Sequence", sequenceHint:"One DNA/RNA sequence · single FASTA record accepted", sequenceBasicNote:"Tm and MW are basic estimates for unmodified, canonical DNA oligos. Ambiguous bases or RNA return N/A for these two values.", sequenceTypeLabel:"Type", lengthLabel:"Length", gcLabel:"GC %", atLabel:"AT/AU %", estimatedMwLabel:"Estimated MW", tmLabel:"Estimated Tm", nucleotideCountsLabel:"Base counts", reverseComplementLabel:"Reverse complement", translationLabel:"Protein translation (frame 1)",
+    exportButton:"Export Lab Sheet", exportModalTitle:"Choose export format", exportModalDesc:"Select the format for your laboratory worksheet.", exportFormatWord:"Word document (.docx)", exportFormatExcel:"Excel-compatible file (.xls)", exportFormatCsv:"Comma-separated values (.csv)", exportFormatTxt:"Plain text (.txt)", footerText:"Educational tool for routine laboratory planning and basic sequence review. Verify experimental settings with your laboratory protocol.",
+    alertInvalidInput:"Please enter valid values. Wells and membranes must be whole numbers.", alertC1Greater:"C1 must be greater than C2 for a dilution calculation.", alertInvalidBase:"The sequence contains unsupported characters.", alertMultiFasta:"Please enter one FASTA sequence at a time.", alertMixedTU:"Do not mix T and U in one sequence. Enter either DNA or RNA.", alertExport:"The requested export library is not available. Check your internet connection and try again.", copyLabel:"Copy", copyCopied:"Copied"
+  },
+  fa: {
+    brandTitle:"دستیار آزمایشگاه بیوتکنولوژی", moduleMolecular:"مولکولی", moduleImmuno:"ایمونواسی", moduleQuantitation:"کمّی", moduleBioinfo:"بیوانفورماتیک",
+    pcrTitle:"محاسبه‌گر مستر میکس PCR", pcrNote:"این ترکیب یک نمونه محاسباتی است. حجم پرایمر، DNA الگو و سایر معرف‌ها را مطابق کیت PCR و پروتکل آزمایشگاه تنظیم کنید.",
+    pcrWellsLabel:"تعداد چاهک‌ها (n)", pcrVolumeLabel:"حجم واکنش (µL)", pcrExcessLabel:"حاشیه اضافی (%)", componentHeader:"جزء", perWellHeader:"به ازای هر چاهک (µL)", totalHeader:"کل (µL)", perWellVolumeLabel:"حجم هر چاهک (1x)", bulkMixLabel:"کل مستر میکس bulk",
+    westernTitle:"محاسبه‌گر سوبسترای ECL وسترن بلات", westernNote:"نرخ پوشش و نسبت معرف‌ها فقط پیش‌تنظیم هستند. همیشه دستورالعمل کیت ECL مورد استفاده را بررسی کنید.", westernMembranesLabel:"تعداد غشاها", westernSizeLabel:"اندازه غشا", westernMini:"Mini-gel (7×8 cm)", westernMidi:"Midi-gel (8×10 cm)", westernCustom:"سفارشی", westernCoverageLabel:"نرخ پوشش (mL/cm²)", westernWidthLabel:"عرض (cm)", westernHeightLabel:"ارتفاع (cm)", westernPresetLabel:"پیش‌تنظیم کیت تجاری", westernPreset11:"نسبت 1:1 (رایج؛ کیت را بررسی کنید)", westernPreset401:"نسبت 40:1 (مختص برخی کیت‌ها)", totalWorkingVolumeLabel:"حجم کاری کل", solutionALabel:"محلول A", solutionBLabel:"محلول B",
+    dilutionTitle:"مبدل رقت و غلظت مولاری", dilutionSectionTitle:"محاسبه رقت", unitLabel:"واحد", targetVolumeLabel:"حجم نهایی (V2)", volumeUnitLabel:"واحد حجم", stockAliquotLabel:"حجم استوک (V1)", bufferBalanceLabel:"حجم حلال/بافر", massMolarityTitle:"مبدل جرم / مولاریته", targetConcLabel:"غلظت هدف", massConcUnitLabel:"واحد غلظت", molecularWeightLabel:"وزن مولکولی", targetVolumeMassLabel:"حجم هدف", massVolumeUnitLabel:"واحد حجم", massRequiredLabel:"جرم مورد نیاز", massRequiredMgLabel:"جرم مورد نیاز (mg)",
+    sequenceTitle:"تحلیل توالی و محاسبه GC", sequenceInputLabel:"ورودی توالی", sequencePlaceholder:"یک توالی DNA/RNA خام یا یک رکورد FASTA را وارد کنید…", analyzeButton:"تحلیل توالی", sequenceHint:"یک توالی DNA/RNA · یک رکورد FASTA", sequenceBasicNote:"Tm و MW فقط تخمین ساده برای الیگوی DNA بدون تغییر و دارای بازهای استاندارد هستند. برای RNA یا بازهای مبهم، این دو مقدار N/A نمایش داده می‌شوند.", sequenceTypeLabel:"نوع", lengthLabel:"طول", gcLabel:"درصد GC", atLabel:"درصد AT/AU", estimatedMwLabel:"MW تقریبی", tmLabel:"Tm تقریبی", nucleotideCountsLabel:"تعداد بازها", reverseComplementLabel:"مکمل معکوس", translationLabel:"ترجمه پروتئین (فریم 1)",
+    exportButton:"خروجی Lab Sheet", exportModalTitle:"انتخاب فرمت خروجی", exportModalDesc:"فرمت برگه محاسبات آزمایشگاه را انتخاب کنید.", exportFormatWord:"سند Word (.docx)", exportFormatExcel:"فایل سازگار با Excel (.xls)", exportFormatCsv:"فایل CSV (.csv)", exportFormatTxt:"متن ساده (.txt)", footerText:"ابزار آموزشی برای برنامه‌ریزی معمول آزمایشگاه و بررسی پایه توالی. تنظیمات آزمایش را با پروتکل آزمایشگاه تطبیق دهید.",
+    alertInvalidInput:"مقادیر معتبر وارد کنید. تعداد چاهک و غشا باید عدد صحیح باشد.", alertC1Greater:"برای محاسبه رقت، C1 باید بزرگ‌تر از C2 باشد.", alertInvalidBase:"توالی شامل نویسه‌های پشتیبانی‌نشده است.", alertMultiFasta:"هر بار فقط یک توالی FASTA وارد کنید.", alertMixedTU:"T و U را در یک توالی مخلوط نکنید. توالی باید DNA یا RNA باشد.", alertExport:"کتابخانه لازم برای این خروجی در دسترس نیست. اتصال اینترنت را بررسی کنید.", copyLabel:"کپی", copyCopied:"کپی شد"
+  },
+  de: {
+    brandTitle:"BioTech Lab Assistant", moduleMolecular:"Molekular", moduleImmuno:"Immunoassay", moduleQuantitation:"Quantifizierung", moduleBioinfo:"Bioinformatik",
+    pcrTitle:"PCR-Mastermix-Rechner", pcrNote:"Dies ist ein Beispielansatz. Primer-, Template- und Reagenzvolumina müssen an das PCR-Kit und das Laborprotokoll angepasst werden.",
+    pcrWellsLabel:"Anzahl der Reaktionen (n)", pcrVolumeLabel:"Reaktionsvolumen (µL)", pcrExcessLabel:"Pipettier-Überschuss (%)", componentHeader:"Komponente", perWellHeader:"Pro Reaktion (µL)", totalHeader:"Gesamt (µL)", perWellVolumeLabel:"Volumen pro Reaktion (1x)", bulkMixLabel:"Gesamt-Mastermix",
+    westernTitle:"Western-Blot-ECL-Substrat-Rechner", westernNote:"Abdeckungsrate und Reagenzverhältnisse sind Voreinstellungen. Befolgen Sie immer die Anleitung des verwendeten ECL-Kits.", westernMembranesLabel:"Anzahl Membranen", westernSizeLabel:"Membranmaß", westernMini:"Mini-Gel (7×8 cm)", westernMidi:"Midi-Gel (8×10 cm)", westernCustom:"Benutzerdefiniert", westernCoverageLabel:"Abdeckungsrate (mL/cm²)", westernWidthLabel:"Breite (cm)", westernHeightLabel:"Höhe (cm)", westernPresetLabel:"Kit-Voreinstellung", westernPreset11:"1:1 (häufig; Kit prüfen)", westernPreset401:"40:1 (Kit-spezifisch; Kit prüfen)", totalWorkingVolumeLabel:"Gesamtarbeitsvolumen", solutionALabel:"Lösung A", solutionBLabel:"Lösung B",
+    dilutionTitle:"Verdünnungs- und Molaritätskonverter", dilutionSectionTitle:"Verdünnungsrechner", unitLabel:"Einheit", targetVolumeLabel:"Endvolumen (V2)", volumeUnitLabel:"Volumeneinheit", stockAliquotLabel:"Stammlösung (V1)", bufferBalanceLabel:"Verdünnungsmittel", massMolarityTitle:"Masse-/Molaritätskonverter", targetConcLabel:"Zielkonzentration", massConcUnitLabel:"Konzentrationseinheit", molecularWeightLabel:"Molekulargewicht", targetVolumeMassLabel:"Zielvolumen", massVolumeUnitLabel:"Volumeneinheit", massRequiredLabel:"Benötigte Masse", massRequiredMgLabel:"Benötigte Masse (mg)",
+    sequenceTitle:"Sequenzanalyse & GC-Gehalts-Tool", sequenceInputLabel:"Sequenzeingabe", sequencePlaceholder:"Eine DNA/RNA-Sequenz oder einen FASTA-Datensatz eingeben…", analyzeButton:"Sequenz analysieren", sequenceHint:"Eine DNA/RNA-Sequenz · ein FASTA-Datensatz", sequenceBasicNote:"Tm und MW sind einfache Schätzwerte für unmodifizierte kanonische DNA-Oligos. Bei RNA oder mehrdeutigen Basen wird N/A angezeigt.", sequenceTypeLabel:"Typ", lengthLabel:"Länge", gcLabel:"GC %", atLabel:"AT/AU %", estimatedMwLabel:"Geschätztes MW", tmLabel:"Geschätztes Tm", nucleotideCountsLabel:"Basenanzahl", reverseComplementLabel:"Reverse Komplement", translationLabel:"Proteintranslation (Frame 1)",
+    exportButton:"Lab Sheet exportieren", exportModalTitle:"Exportformat wählen", exportModalDesc:"Wählen Sie das Format für das Labor-Arbeitsblatt.", exportFormatWord:"Word-Dokument (.docx)", exportFormatExcel:"Excel-kompatible Datei (.xls)", exportFormatCsv:"CSV-Datei (.csv)", exportFormatTxt:"Textdatei (.txt)", footerText:"Lernwerkzeug für routinemäßige Laborplanung und einfache Sequenzanalyse. Experimentelle Einstellungen mit dem Laborprotokoll prüfen.",
+    alertInvalidInput:"Bitte gültige Werte eingeben. Reaktions- und Membranzahl müssen ganze Zahlen sein.", alertC1Greater:"C1 muss für eine Verdünnung größer als C2 sein.", alertInvalidBase:"Die Sequenz enthält nicht unterstützte Zeichen.", alertMultiFasta:"Bitte nur eine FASTA-Sequenz gleichzeitig eingeben.", alertMixedTU:"T und U nicht in derselben Sequenz mischen. DNA oder RNA eingeben.", alertExport:"Die benötigte Exportbibliothek ist nicht verfügbar. Internetverbindung prüfen.", copyLabel:"Kopieren", copyCopied:"Kopiert"
+  }
+};
+
+const state = { language:"en", appAlertTimer:null };
+const allowedBases = /^[ACGTURYKMSWBDHVN]+$/i;
+const ambiguousBases = /[RYKMSWBDHVN]/i;
+const dnaComplement = {A:"T",T:"A",C:"G",G:"C",R:"Y",Y:"R",K:"M",M:"K",S:"S",W:"W",B:"V",V:"B",D:"H",H:"D",N:"N"};
+const rnaComplement = {A:"U",U:"A",C:"G",G:"C",R:"Y",Y:"R",K:"M",M:"K",S:"S",W:"W",B:"V",V:"B",D:"H",H:"D",N:"N"};
+const codonTable = {
+  TTT:"F",TTC:"F",TTA:"L",TTG:"L",TCT:"S",TCC:"S",TCA:"S",TCG:"S",TAT:"Y",TAC:"Y",TAA:"*",TAG:"*",TGT:"C",TGC:"C",TGA:"*",TGG:"W",
+  CTT:"L",CTC:"L",CTA:"L",CTG:"L",CCT:"P",CCC:"P",CCA:"P",CCG:"P",CAT:"H",CAC:"H",CAA:"Q",CAG:"Q",CGT:"R",CGC:"R",CGA:"R",CGG:"R",
+  ATT:"I",ATC:"I",ATA:"I",ATG:"M",ACT:"T",ACC:"T",ACA:"T",ACG:"T",AAT:"N",AAC:"N",AAA:"K",AAG:"K",AGT:"S",AGC:"S",AGA:"R",AGG:"R",
+  GTT:"V",GTC:"V",GTA:"V",GTG:"V",GCT:"A",GCC:"A",GCA:"A",GCG:"A",GAT:"D",GAC:"D",GAA:"E",GAG:"E",GGT:"G",GGC:"G",GGA:"G",GGG:"G"
+};
+
+function t(key){ return (translations[state.language] && translations[state.language][key]) || translations.en[key] || key; }
+function applyTranslations(){
+  document.documentElement.lang=state.language;
+  const rtl=state.language==="fa"; document.documentElement.dir=rtl?"rtl":"ltr"; document.body.dir=rtl?"rtl":"ltr";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ const v=t(el.dataset.i18n); if(el.tagName==="INPUT"||el.tagName==="TEXTAREA") el.placeholder=v; else el.textContent=v; });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
+  document.getElementById("selectedLanguageLabel").textContent=state.language.toUpperCase();
+  document.querySelectorAll("[data-lang]").forEach(el=>el.classList.toggle("active",el.dataset.lang===state.language));
+  document.querySelectorAll(".copy-btn").forEach(b=>{b.title=t("copyLabel"); b.classList.remove("copied"); const i=b.querySelector("i"); if(i)i.className="bi bi-clipboard";});
+  updateAll(false);
+}
+function showAlert(key,type="warning"){ const el=document.getElementById("appAlert"); el.className=`alert alert-${type} alert-banner show`; el.textContent=t(key); clearTimeout(state.appAlertTimer); state.appAlertTimer=setTimeout(()=>{el.className="alert alert-banner";},3500); }
+function num(id){ return Number(document.getElementById(id).value); }
+function wholePositive(v){ return Number.isInteger(v) && v>0; }
+
+function calculatePCR(show=true){
+  const wells=num("pcrWells"), reactionVolume=num("pcrVolume"), excess=num("pcrExcess");
+  if(!wholePositive(wells)||!Number.isFinite(reactionVolume)||reactionVolume<=0||!Number.isFinite(excess)||excess<0){ if(show)showAlert("alertInvalidInput"); return null; }
+  const masterMix=reactionVolume*.5, forwardPrimer=reactionVolume*.02, reversePrimer=reactionVolume*.02, templateDNA=reactionVolume*.04;
+  const water=reactionVolume-(masterMix+forwardPrimer+reversePrimer+templateDNA); const scale=wells*(1+excess/100);
+  return {perWell:{masterMix,forwardPrimer,reversePrimer,templateDNA,water},total:{masterMix:masterMix*scale,forwardPrimer:forwardPrimer*scale,reversePrimer:reversePrimer*scale,templateDNA:templateDNA*wells,water:water*scale},totalBulkMix:(masterMix+forwardPrimer+reversePrimer+water)*scale};
+}
+function updatePCR(show=false){
+  const r=calculatePCR(show), tb=document.getElementById("pcrTableBody"); if(!r){tb.innerHTML="";document.getElementById("pcrPerWellValue").textContent="0.00 µL";document.getElementById("pcrBulkValue").textContent="0.00 µL";return;}
+  const rows=[["2X Master Mix",r.perWell.masterMix,r.total.masterMix],["Forward Primer (10 µM)",r.perWell.forwardPrimer,r.total.forwardPrimer],["Reverse Primer (10 µM)",r.perWell.reversePrimer,r.total.reversePrimer],["Template DNA",r.perWell.templateDNA,r.total.templateDNA],["Nuclease-free H2O",r.perWell.water,r.total.water]];
+  tb.innerHTML=rows.map(x=>`<tr><td>${x[0]}</td><td class="text-center">${x[1].toFixed(2)}</td><td class="text-center">${x[2].toFixed(2)}</td></tr>`).join("");
+  document.getElementById("pcrPerWellValue").textContent=`${(r.perWell.masterMix+r.perWell.forwardPrimer+r.perWell.reversePrimer+r.perWell.templateDNA+r.perWell.water).toFixed(2)} µL`;
+  document.getElementById("pcrBulkValue").textContent=`${r.totalBulkMix.toFixed(2)} µL`;
+}
+
+function calculateWestern(show=true){
+  const membranes=num("westernMembranes"), coverage=num("westernCoverage"), size=document.getElementById("westernSizeSelect").value, preset=document.getElementById("westernPreset").value;
+  let w=7,h=8; if(size==="midi"){w=8;h=10;} if(size==="custom"){w=num("westernWidth");h=num("westernHeight");}
+  if(!wholePositive(membranes)||!Number.isFinite(coverage)||coverage<=0||!Number.isFinite(w)||w<=0||!Number.isFinite(h)||h<=0){if(show)showAlert("alertInvalidInput");return null;}
+  const totalVolume=membranes*w*h*coverage, a=preset==="40:1"?40/41:.5, b=preset==="40:1"?1/41:.5;
+  return {totalVolume,solutionA:totalVolume*a,solutionB:totalVolume*b};
+}
+function updateWestern(show=false){
+  document.getElementById("westernCustomSizeGroup").classList.toggle("show",document.getElementById("westernSizeSelect").value==="custom");
+  const r=calculateWestern(show); ["westernTotalVolume","westernSolutionA","westernSolutionB"].forEach(id=>document.getElementById(id).textContent="0.00 mL"); if(!r)return;
+  document.getElementById("westernTotalVolume").textContent=`${r.totalVolume.toFixed(2)} mL`; document.getElementById("westernSolutionA").textContent=`${r.solutionA.toFixed(2)} mL`; document.getElementById("westernSolutionB").textContent=`${r.solutionB.toFixed(2)} mL`;
+}
+
+function calculateDilution(show=true){
+  const c1=num("dilutionC1")*num("dilutionC1Unit"), c2=num("dilutionC2")*num("dilutionC2Unit"), v2=num("dilutionV2")*num("dilutionV2Unit");
+  if(![c1,c2,v2].every(v=>Number.isFinite(v)&&v>0)){if(show)showAlert("alertInvalidInput");return null;} if(c1<=c2){if(show)showAlert("alertC1Greater");return null;}
+  const v1=c2*v2/c1; return {v1,buffer:v2-v1};
+}
+function updateDilution(show=false){const r=calculateDilution(show);document.getElementById("dilutionV1Output").textContent=r?`${(r.v1*1e6).toFixed(2)} µL`:"0.00 µL";document.getElementById("dilutionBufferOutput").textContent=r?`${(r.buffer*1e6).toFixed(2)} µL`:"0.00 µL";}
+function calculateMass(show=true){const c=num("massConc")*num("massConcUnit"),v=num("massVolume")*num("massVolumeUnit"),mw=num("massMw");if(![c,v,mw].every(x=>Number.isFinite(x)&&x>0)){if(show)showAlert("alertInvalidInput");return null;}const g=c*v*mw;return{g,mg:g*1000};}
+function updateMass(show=false){const r=calculateMass(show);document.getElementById("massResultG").textContent=r?`${r.g.toFixed(4)} g`:"0.0000 g";document.getElementById("massResultMg").textContent=r?`${r.mg.toFixed(2)} mg`:"0.00 mg";}
+
+function normalizeSequence(raw){
+  if(!raw||!raw.trim())return {valid:false,error:"empty"};
+  const lines=raw.split(/\r?\n/), headers=lines.filter(x=>x.trim().startsWith(">")); if(headers.length>1)return{valid:false,error:"multi"};
+  const body=lines.filter(x=>!x.trim().startsWith(">")); let seq=body.join("").replace(/\s+/g,"").replace(/\d+/g,"").toUpperCase();
+  if(!seq)return{valid:false,error:"empty"}; if(!allowedBases.test(seq))return{valid:false,error:"invalid"};
+  const hasT=seq.includes("T"),hasU=seq.includes("U"); if(hasT&&hasU)return{valid:false,error:"mixed"};
+  return {valid:true,seq,type:hasU?"RNA":"DNA",ambiguous:ambiguousBases.test(seq)};
+}
+function reverseComplement(seq,type){const map=type==="RNA"?rnaComplement:dnaComplement;return seq.split("").reverse().map(b=>map[b]||b).join("");}
+function translateSequence(seq){const dna=seq.replace(/U/g,"T"),aa=[];for(let i=0;i+2<dna.length;i+=3)aa.push(codonTable[dna.slice(i,i+3)]||"X");return aa.join("");}
+function basicTm(seq){const gc=(seq.match(/[GC]/g)||[]).length,at=(seq.match(/[AT]/g)||[]).length,n=seq.length;if(n<=25)return at*2+gc*4;return 64.9+41*((gc-16.4)/n);}
+function dnaMw(seq){const a=(seq.match(/A/g)||[]).length,tv=(seq.match(/T/g)||[]).length,c=(seq.match(/C/g)||[]).length,g=(seq.match(/G/g)||[]).length;return (a*313.21+tv*304.2+c*289.18+g*329.21-61.96)/1000;}
+function sequenceMetrics(raw){
+  const p=normalizeSequence(raw); if(!p.valid)return p; const {seq,type,ambiguous}=p; const A=(seq.match(/A/g)||[]).length,T=(seq.match(/[TU]/g)||[]).length,C=(seq.match(/C/g)||[]).length,G=(seq.match(/G/g)||[]).length,canonical=A+T+C+G;
+  const gcPct=canonical?100*(G+C)/canonical:0,atPct=canonical?100*(A+T)/canonical:0,canEstimate=type==="DNA"&&!ambiguous;
+  return {valid:true,seq,type,ambiguous,length:seq.length,gcPct,atPct,counts:{A,T,C,G},mw:canEstimate?dnaMw(seq):null,tm:canEstimate?basicTm(seq):null,reverse:reverseComplement(seq,type),protein:translateSequence(seq)};
+}
+function clearSequence(){document.getElementById("seqType").textContent="-";document.getElementById("seqLength").textContent="0 nt";document.getElementById("seqGc").textContent="0.00%";document.getElementById("seqAt").textContent="0.00%";document.getElementById("seqMw").textContent="0.00 kDa";document.getElementById("seqTm").textContent="0.00 °C";document.getElementById("seqCounts").textContent="A: 0 · T/U: 0 · C: 0 · G: 0";document.getElementById("seqReverse").textContent="-";document.getElementById("seqTranslation").textContent="-";}
+function analyzeSequence(show=false){
+  const raw=document.getElementById("sequenceInput").value, m=sequenceMetrics(raw); if(!m.valid){if(m.error==="empty"){clearSequence();return null;}if(show)showAlert(m.error==="multi"?"alertMultiFasta":m.error==="mixed"?"alertMixedTU":"alertInvalidBase","danger");return null;}
+  document.getElementById("seqType").textContent=m.type; document.getElementById("seqLength").textContent=`${m.length} nt`; document.getElementById("seqGc").textContent=`${m.gcPct.toFixed(2)}%`; document.getElementById("seqAt").textContent=`${m.atPct.toFixed(2)}%`; document.getElementById("seqMw").textContent=m.mw===null?"N/A":`${m.mw.toFixed(2)} kDa`; document.getElementById("seqTm").textContent=m.tm===null?"N/A":`${m.tm.toFixed(2)} °C`; document.getElementById("seqCounts").textContent=`A: ${m.counts.A} · T/U: ${m.counts.T} · C: ${m.counts.C} · G: ${m.counts.G}`; document.getElementById("seqReverse").textContent=m.reverse||"-"; document.getElementById("seqTranslation").textContent=m.protein||"-"; return m;
+}
+
+async function copyOutput(id){const el=document.getElementById(id),text=el.textContent.trim();if(!text||text==="-"||text==="N/A")return;const btn=document.querySelector(`[data-copy-target="${id}"]`);try{await navigator.clipboard.writeText(text);}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}if(btn){btn.classList.add("copied");btn.title=t("copyCopied");const i=btn.querySelector("i");if(i)i.className="bi bi-check-lg";setTimeout(()=>{btn.classList.remove("copied");btn.title=t("copyLabel");if(i)i.className="bi bi-clipboard";},1200);}}
+
+function getSections(){
+  const p=calculatePCR(false),w=calculateWestern(false),d=calculateDilution(false),m=calculateMass(false),s=sequenceMetrics(document.getElementById("sequenceInput").value); const sec=[];
+  sec.push({title:"Document Information",rows:[["Worksheet","BioTech Lab Assistant | Laboratory Worksheet"],["Prepared",new Date().toLocaleString()]]});
+  if(p)sec.push({title:"PCR Master Mix Setup (example)",rows:[["Reaction Count",document.getElementById("pcrWells").value],["Reaction Volume",`${document.getElementById("pcrVolume").value} µL`],["Overage",`${document.getElementById("pcrExcess").value}%`],["2X Master Mix",`${p.perWell.masterMix.toFixed(2)} µL / well`],["Forward Primer",`${p.perWell.forwardPrimer.toFixed(2)} µL / well`],["Reverse Primer",`${p.perWell.reversePrimer.toFixed(2)} µL / well`],["Template DNA",`${p.perWell.templateDNA.toFixed(2)} µL / well`],["Nuclease-free H2O",`${p.perWell.water.toFixed(2)} µL / well`],["Note","Example setup; verify kit and protocol."]]});
+  if(w)sec.push({title:"Western Blot ECL Working Solution",rows:[["Membrane Count",document.getElementById("westernMembranes").value],["Coverage Rate",`${document.getElementById("westernCoverage").value} mL/cm²`],["Ratio",document.getElementById("westernPreset").value],["Total Working Solution",`${w.totalVolume.toFixed(2)} mL`],["Solution A",`${w.solutionA.toFixed(2)} mL`],["Solution B",`${w.solutionB.toFixed(2)} mL`],["Note","Verify the reagent ratio in the ECL kit instructions."]]});
+  if(d)sec.push({title:"Dilution Preparation",rows:[["C1",`${document.getElementById("dilutionC1").value} ${document.getElementById("dilutionC1Unit").selectedOptions[0].text}`],["C2",`${document.getElementById("dilutionC2").value} ${document.getElementById("dilutionC2Unit").selectedOptions[0].text}`],["V2",`${document.getElementById("dilutionV2").value} ${document.getElementById("dilutionV2Unit").selectedOptions[0].text}`],["V1",`${(d.v1*1e6).toFixed(2)} µL`],["Diluent",`${(d.buffer*1e6).toFixed(2)} µL`]]});
+  if(m)sec.push({title:"Mass and Molarity Preparation",rows:[["Target Concentration",`${document.getElementById("massConc").value} ${document.getElementById("massConcUnit").selectedOptions[0].text}`],["Target Volume",`${document.getElementById("massVolume").value} ${document.getElementById("massVolumeUnit").selectedOptions[0].text}`],["Molecular Weight",`${document.getElementById("massMw").value} g/mol`],["Required Mass",`${m.g.toFixed(4)} g (${m.mg.toFixed(2)} mg)`]]});
+  if(s.valid)sec.push({title:"Sequence Analysis Summary",rows:[["Type",s.type],["Length",`${s.length} nt`],["GC %",`${s.gcPct.toFixed(2)}%`],["AT/AU %",`${s.atPct.toFixed(2)}%`],["Estimated Tm",s.tm===null?"N/A":`${s.tm.toFixed(2)} °C`],["Estimated MW",s.mw===null?"N/A":`${s.mw.toFixed(2)} kDa`],["Reverse Complement",s.reverse],["Translation",s.protein],["Note","Tm/MW are basic estimates only for canonical unmodified DNA oligos."]]});
+  return sec;
+}
+function escCsv(v){return `"${String(v).replace(/"/g,'""')}"`;}
+function buildText(sec){return sec.flatMap(s=>[s.title,...s.rows.map(r=>`${r[0]}: ${r[1]}`),""]).join("\n").trim();}
+function buildCsv(sec){return sec.flatMap(s=>[[s.title,""],...s.rows,["",""]]).map(r=>r.map(escCsv).join(",")).join("\r\n");}
+function escHtml(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function buildExcel(sec){const rows=sec.flatMap(s=>[`<tr><th colspan="2">${escHtml(s.title)}</th></tr>`,...s.rows.map(r=>`<tr><td>${escHtml(r[0])}</td><td>${escHtml(r[1])}</td></tr>`),'<tr><td colspan="2"></td></tr>']).join("");return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BioTech Lab Assistant</title></head><body><table border="1"><tr><th>Item</th><th>Value</th></tr>${rows}</table></body></html>`;}
+function escXml(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");}
+async function buildWord(sec){if(typeof JSZip==="undefined")throw new Error("JSZip unavailable");const body=[];body.push(`<w:p><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t>BioTech Lab Assistant | Laboratory Worksheet</w:t></w:r></w:p>`);sec.forEach(s=>{body.push(`<w:p><w:r><w:rPr><w:b/><w:sz w:val="26"/></w:rPr><w:t>${escXml(s.title)}</w:t></w:r></w:p>`);s.rows.forEach(r=>body.push(`<w:p><w:r><w:rPr><w:b/></w:rPr><w:t>${escXml(r[0])}: </w:t></w:r><w:r><w:t>${escXml(r[1])}</w:t></w:r></w:p>`));});const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body.join("")}<w:sectPr/></w:body></w:document>`;const zip=new JSZip();zip.file("[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);zip.file("_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);zip.file("word/document.xml",doc);return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});}
+async function downloadExport(format){try{const sec=getSections();let content,type,ext;if(format==="txt"){content=buildText(sec);type="text/plain;charset=utf-8";ext="txt";}else if(format==="csv"){content=buildCsv(sec);type="text/csv;charset=utf-8";ext="csv";}else if(format==="xls"){content=buildExcel(sec);type="application/vnd.ms-excel;charset=utf-8";ext="xls";}else{content=await buildWord(sec);type="application/vnd.openxmlformats-officedocument.wordprocessingml.document";ext="docx";}const blob=content instanceof Blob?content:new Blob([content],{type});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`BioTech_Lab_Assistant_Laboratory_Worksheet.${ext}`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);}catch(e){showAlert("alertExport","danger");}}
+
+function updateAll(show=false){updatePCR(show);updateWestern(show);updateDilution(show);updateMass(show);analyzeSequence(false);}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  const ids=["pcrWells","pcrVolume","pcrExcess","westernMembranes","westernCoverage","westernSizeSelect","westernWidth","westernHeight","westernPreset","dilutionC1","dilutionC1Unit","dilutionC2","dilutionC2Unit","dilutionV2","dilutionV2Unit","massConc","massConcUnit","massMw","massVolume","massVolumeUnit"];
+  ids.forEach(id=>{const el=document.getElementById(id);el.addEventListener("input",()=>updateAll(false));el.addEventListener("change",()=>updateAll(false));});
+  document.getElementById("sequenceInput").addEventListener("input",()=>analyzeSequence(false));
+  document.getElementById("analyzeSequenceBtn").addEventListener("click",()=>analyzeSequence(true));
+  document.getElementById("exportLabSheetBtn").addEventListener("click",()=>bootstrap.Modal.getOrCreateInstance(document.getElementById("exportFormatModal")).show());
+  document.querySelectorAll("[data-export-format]").forEach(b=>b.addEventListener("click",()=>{downloadExport(b.dataset.exportFormat);bootstrap.Modal.getOrCreateInstance(document.getElementById("exportFormatModal")).hide();}));
+  document.querySelectorAll("[data-copy-target]").forEach(b=>b.addEventListener("click",()=>copyOutput(b.dataset.copyTarget)));
+  document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{state.language=b.dataset.lang;applyTranslations();}));
+  applyTranslations();
+});
+</script>
+</body>
 </html>

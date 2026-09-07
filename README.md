@@ -1,103 +1,87 @@
 # 🧬 BioTech Lab Assistant | دستیار آزمایشگاه بیوتکنولوژی
 
-[**GitHub Profile**](https://github.com/AlK9877)
+**Live app:** https://alk9877.github.io/BioTech-Lab-Assistant/
 
----
+BioTech Lab Assistant is a small, client-side educational web application for routine biotechnology calculations and basic DNA/RNA sequence review. It was developed after completing the **Web App Design for Biotechnologists with AI** course, with AI-assisted development used during the coding and refinement process.
 
-English Overview
+> **Important:** This is an educational and planning tool. Laboratory reagent volumes, PCR conditions, ECL ratios, and other experimental settings must be checked against the specific kit instructions and laboratory protocol before use.
 
-**BioTech Lab Assistant** is a modern, responsive, client-side web application designed to accelerate routine biotechnology bench calculations and bioinformatics workflows. Built specifically for medical lab scientists, biotechnology researchers, students, and lab technicians to eliminate manual calculation errors, standardize protocols, and save critical benchwork time.
+## Main modules
 
----
+### 1. PCR Master Mix Calculator
+- Calculates per-reaction and bulk volumes.
+- Includes a configurable excess margin for pipetting loss.
+- Uses an **example PCR composition**, not a universal PCR recipe.
+- Requires a whole-number reaction count.
 
-### ✨ Key Features & Modules
+### 2. Western Blot ECL Substrate Calculator
+- Estimates working solution from membrane surface area.
+- Includes mini-gel, midi-gel, and custom membrane sizes.
+- Includes 1:1 and 40:1 reagent-ratio presets.
+- Ratio presets are clearly marked as values that must be verified against the kit instructions.
+- Requires a whole-number membrane count.
 
-1. **PCR Master Mix Calculator:**
-   - Single-reaction volume breakdown and bulk master mix volume scaling.
-   - Dynamic compensation for pipetting loss via customizable excess margins (default: 10%).
-   - Automatic balancing of Nuclease-free $\text{H}_2\text{O}$ and total bulk volume calculations.
+### 3. Dilution & Molarity Converter
+- Solves `C1V1 = C2V2` for routine stock dilutions.
+- Supports M, mM, µM, and nM.
+- Supports L, mL, and µL.
+- Calculates required solute mass from concentration, volume, and molecular weight.
 
-2. **Western Blot ECL Substrate Calculator:**
-   - Membrane surface area-based reagent volume estimation (Mini-gel: $7 \times 8\text{ cm}$, Midi-gel: $8 \times 10\text{ cm}$, or Custom dimensions).
-   - Commercial kit ratio presets: Standard $1:1$ ratio (e.g., Pierce™ ECL, Bio-Rad Clarity) and $40:1$ ratio kits.
-   - Calculates exact volumes for Luminol/Solution A and Peroxide/Solution B.
+### 4. DNA/RNA Sequence Tool
+- Accepts a raw sequence or **one FASTA record at a time**.
+- Detects DNA versus RNA and keeps RNA as RNA instead of converting `U` to `T`.
+- Rejects mixed `T/U` input.
+- Calculates sequence length and canonical-base GC and AT/AU percentages.
+- Produces the correct DNA or RNA reverse complement.
+- Provides frame-1 protein translation.
+- Supports IUPAC ambiguity codes for sequence handling and reverse complement.
+- Shows **N/A** for basic Tm and MW estimates when the input is RNA or contains ambiguity codes.
+- Labels Tm as an **estimated** value.
 
-3. **Universal Dilution & Molarity Converter:**
-   - $C_1V_1 = C_2V_2$ serial & stock dilution solver with flexible units ($\text{M, mM, µM, nM}$ and $\text{L, mL, µL}$).
-   - Mass-to-Molarity converter: Computes required solute mass in grams ($g$) and milligrams ($mg$) based on target volume, concentration, and molecular weight.
+### 5. Lab Sheet Export
+- Word document (`.docx`)
+- Excel-compatible HTML file (`.xls`)
+- CSV (`.csv`)
+- Plain text (`.txt`)
 
-4. **Sequence & GC Content Tool:**
-   - Accepts raw nucleotide text and standard FASTA formats (DNA/RNA).
-   - Real-time length, GC%, and AT% metrics.
-   - **Primer Melting Temperature ($T_m$):** Computed via standard Marmur / Wallace-Itakura empirical rules.
-   - **High-Precision ssDNA MW:** Accurate molecular weight estimation accounting for individual nucleotide weights and $5'$ monophosphate adjustment.
-   - Interactive base counts ($A, T/U, C, G$), $5' \to 3'$ Reverse Complement generator, and Frame 1 protein translation.
-   - One-click copy-to-clipboard buttons with live feedback.
+The `.xls` option is an Excel-compatible HTML table saved with an `.xls` extension; it is not a native binary Excel workbook.
 
-5. **Multi-Format Lab Sheet Export:**
-   - Instantly export comprehensive experimental records into **Word (.docx)**, **Excel (.xls)**, **CSV (.csv)**, and **Plain Text (.txt)** formats directly inside the browser using client-side JSZip.
+### 6. Languages
+- English
+- فارسی (RTL)
+- Deutsch
 
-6. **Trilingual & RTL Support:**
-   - Seamless on-the-fly toggling between **English (EN)**, **فارسی (FA - RTL with Vazirmatn typography)**, and **Deutsch (DE)** without page reload.
+## Technical structure
 
----
+The application is a **single-file client-side web app** (`index.html`) with no backend or database. It uses CDN-hosted frontend dependencies, including Bootstrap, Bootstrap Icons, Google Fonts, and JSZip. Because of these CDN resources, a network connection is required for all styling and export features to load reliably unless the resources are already cached.
 
-### 🚀 Getting Started & Deployment
+## Sequence calculation notes
 
-This application is built as a zero-dependency, single-file (`index.html`) web application ready for instant deployment on **GitHub Pages**:
+The Tm result is a basic empirical estimate for canonical DNA oligos. Actual oligonucleotide Tm depends on reaction conditions such as Mg²⁺, salt, dNTP concentration, and oligo concentration. For experimental primer design, use a dedicated oligo-analysis tool and the conditions of your PCR system.
 
-1. Clone or download `index.html`.
-2. Open `index.html` in any modern web browser (no local server or backend required).
-3. To host on GitHub Pages:
-   - Push `index.html` to your GitHub repository.
-   - Navigate to **Settings** > **Pages** > Select branch `main` and root `/` > Click **Save**.
+The ssDNA MW estimate uses base-specific nucleotide masses for an unmodified DNA oligo. Modified oligos, phosphorylated ends, RNA, and ambiguity codes require a more specific calculation.
 
----
+## References used for calculation checks
 
-معرفی به زبان فارسی
+- IDT OligoAnalyzer and oligonucleotide guidance: https://www.idtdna.com/pages/tools/oligoanalyzer
+- IDT molecular-weight guidance: https://www.idtdna.com/pages/support/faqs/how-do-i-calculate-the-molecular-weight-of-an-oligo-
+- Thermo Fisher DNA/RNA molecular-weight reference: https://www.thermofisher.com/fr/en/home/references/ambion-tech-support/rna-tools-and-calculators/dna-and-rna-molecular-weights-and-conversions.html
 
-**دستیار آزمایشگاه بیوتکنولوژی (BioTech Lab Assistant)** یک وب‌اپلیکیشن سبک، واکنش‌گرا و سمت کلاینت است که برای سرعت‌بخشیدن و به حداقل رساندن خطاهای محاسباتی در آزمایشگاه‌های بیوتکنولوژی، تشخیص طبی، ژنتیک و بیولوژی مولکولی توسعه یافته است.
+## Run locally
 
----
+1. Download `index.html`.
+2. Open it in a modern browser.
+3. Keep an internet connection available so the CDN resources can load.
 
-### ✨ قابلیت‌ها و ماژول‌های برنامه
+## Deploy with GitHub Pages
 
-۱. **محاسبه‌گر مستر میکس PCR:**
-   - تفکیک اجزای واکنش برای ۱ چاهک و محاسبه حجم تجمیعی مستر میکس (Bulk Mix).
-   - احتساب خطای پیپتینگ و اتلاف محلول با امکان تعیین درصد مازاد (پیش‌فرض ۱۰٪).
-   - بالانس خودکار حجم آب عاری از نوکلئاز بر اساس حجم نهایی واکنش.
+1. Upload `index.html` to the repository root.
+2. Open **Settings → Pages**.
+3. Select the `main` branch and root (`/`).
+4. Save the Pages settings.
 
-۲. **محاسبه‌گر سوبسترای وسترن بلات (ECL):**
-   - تعیین حجم بهینه محلول کاری بر اساس سطح و ابعاد غشا (مینی‌ژل، مدی‌ژل یا ابعاد سفارشی به سانتی‌متر).
-   - پشتیبانی از نسبت‌های استاندارد کیت‌های تجاری ($1:1$ و $40:1$).
-   - تفکیک دقیق حجم معرف A (لومینول) و معرف B (پراکسید).
+## About the project
 
-۳. **مبدل رقت و غلظت مولاری:**
-   - حل سریع معادلات رقت‌سازی $C_1V_1 = C_2V_2$ با واحدهای متنوع غلظت و حجم.
-   - محاسبه دقیق جرم ماده حل‌شونده بر حسب گرم و میلی‌گرم با دریافت وزن مولکولی (Molecular Weight).
+This project was created as a practical learning project after participating in a course on web-app development for biotechnologists with AI. The goal was to combine basic web development with common biotechnology calculations and simple sequence-analysis tasks in one accessible interface.
 
-۴. **آنالیز توالی ژنتیکی و درصد GC:**
-   - پشتیبانی از توالی‌های خام و فرمت استاندارد FASTA (برای DNA و RNA).
-   - محاسبه درصد GC و AT و شمارش تفکیکی بازهای نیتروژنی ($A, T/U, C, G$).
-   - **محاسبه دمای ذوب پرایمر ($T_m$):** محاسبه بر اساس فرمول‌های استاندارد والاس و مارمور.
-   - **تخمین دقیق وزن مولکولی (ssDNA):** محاسبه با لحاظ کردن جرم مولی دقیق تک‌تک نوکلئوتیدها و تصحیح پیوند فسفات.
-   - تولید توالی مکمل معکوس ($5' \to 3'$) و ترجمه پروتئینی در فریم شماره ۱.
-   - دکمه‌های کپی سریع در حافظه (Copy to Clipboard) با فیدبک بصری.
-
-۵. **خروجی چندفرمته برگه کار آزمایشگاه (Lab Sheet):**
-   - امکان دانلود خلاصه تمام محاسبات آزمایشگاهی در قالب فرمت‌های **Word (.docx)**، **Excel (.xls)**، **CSV** و **Text (.txt)** به‌صورت کاملاً آفلاین و درون مرورگر.
-
-۶. **رابط کاربری ۳ زبانه:**
-   - جابه‌جایی آنی میان زبان‌های **فارسی (راست‌به‌چپ با فونت زیبای وزیرمتن)**، **انگلیسی** و **آلمانی** بدون نیاز به بارگذاری مجدد صفحه.
-
----
-
-## 👨‍🔬 About the Author / درباره توسعه‌دهنده
-
-**English:**  
-This project was designed and built after completing the **"Web App Design for Biotechnologists with AI"** course. It was developed with the goal of empowering laboratory colleagues, students, and life-science researchers with accessible, precise, and practical calculation tools at the bench.
-
-**فارسی:**  
-این پروژه پس از گذراندن دوره **«طراحی وب‌اپلیکیشن برای بایوتکنولوژیست‌ها به کمک هوش مصنوعی»** توسعه یافته است. هدف از ایجاد این ابزار، ارائه راهکاری دقیق، سریع و در دسترس برای کمک به همکاران آزمایشگاهی، محققان و فعالان علوم زیستی جهت پیشگیری از خطاهای انسانی در پیپتینگ و آماده‌سازی معرف‌ها بوده است.
-
-* **GitHub Profile:** [@AlK9877](https://github.com/AlK9877)
+**GitHub:** https://github.com/AlK9877
