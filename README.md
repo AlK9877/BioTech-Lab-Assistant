@@ -4,7 +4,7 @@
 
 ---
 
-## 🇬🇧 English Overview
+English Overview
 
 **BioTech Lab Assistant** is a modern, responsive, client-side web application designed to accelerate routine biotechnology bench calculations and bioinformatics workflows. Built specifically for medical lab scientists, biotechnology researchers, students, and lab technicians to eliminate manual calculation errors, standardize protocols, and save critical benchwork time.
 
@@ -54,7 +54,7 @@ This application is built as a zero-dependency, single-file (`index.html`) web a
 
 ---
 
-## 🇮🇷 معرفی به زبان فارسی
+معرفی به زبان فارسی
 
 **دستیار آزمایشگاه بیوتکنولوژی (BioTech Lab Assistant)** یک وب‌اپلیکیشن سبک، واکنش‌گرا و سمت کلاینت است که برای سرعت‌بخشیدن و به حداقل رساندن خطاهای محاسباتی در آزمایشگاه‌های بیوتکنولوژی، تشخیص طبی، ژنتیک و بیولوژی مولکولی توسعه یافته است.
 
